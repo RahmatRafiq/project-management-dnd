@@ -12,7 +12,18 @@ import { Project } from '@/types/Projects';
 const columns = (filter: string) => [
   { data: 'reference', title: 'Reference' },
   { data: 'name', title: 'Name' },
-  { data: 'description', title: 'Description' },
+  {
+    data: 'description',
+    title: 'Description',
+    render: (data: null) => {
+      const val = data as unknown as string;
+      const max = 50;
+      if (!val) return '';
+      return val.length > max
+        ? val.slice(0, max) + '…'
+        : val;
+    },
+  },
   {
     data: null,
     title: 'Actions',
@@ -44,20 +55,19 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
     });
   };
 
-  const handleRestore = (id: number) => {
+  const handleRestore = (id: string) => {
     router.post(route('projects.restore', id), {}, {
       onSuccess: () => dtRef.current?.reload(),
     });
   };
 
-  const handleForceDelete = (id: number) => {
+  const handleForceDelete = (id: string) => {
     router.delete(route('projects.force-delete', id), {
       onSuccess: () => dtRef.current?.reload(),
     });
   };
 
   const drawCallback = () => {
-    // Render Edit link
     document.querySelectorAll('.inertia-link-cell').forEach((cell) => {
       const id = cell.getAttribute('data-id');
       if (id) {
@@ -73,7 +83,6 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
       }
     });
 
-    // Attach event listener for Delete / Restore / Force Delete
     document.querySelectorAll('.btn-delete').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -83,13 +92,13 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
     document.querySelectorAll('.btn-restore').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        if (id) handleRestore(Number(id));
+        if (id) handleRestore(String(id));
       });
     });
     document.querySelectorAll('.btn-force-delete').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        if (id) handleForceDelete(Number(id));
+        if (id) handleForceDelete(String(id));
       });
     });
   };
