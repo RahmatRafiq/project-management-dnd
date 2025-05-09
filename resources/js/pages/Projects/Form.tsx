@@ -17,7 +17,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
         reference: project ? project.reference : '',
         name: project ? project.name : '',
         description: project ? project.description : '',
-        metadata: project && project.metadata ? project.metadata : [] as string[], // Initialize as array
+        metadata: project && project.metadata ? project.metadata : [] as string[],
         is_active: project ? project.is_active : true,
     });
 
@@ -42,7 +42,6 @@ export default function ProjectForm({ project }: { project?: Project }) {
                 <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
 
                 <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-                    {/* Content */}
                     <div className="flex-1 md:max-w-2xl space-y-6">
                         <HeadingSmall
                             title={isEdit ? 'Edit Project' : 'Create Project'}
@@ -83,10 +82,10 @@ export default function ProjectForm({ project }: { project?: Project }) {
                                 <Input
                                     id="metadata"
                                     type="text"
-                                    value={Array.isArray(data.metadata) ? data.metadata.join(', ') : ''} // Ensure metadata is an array
+                                    value={Array.isArray(data.metadata) ? data.metadata.join(', ') : ''}
                                     onChange={(e) => {
                                         const metadataArray = e.target.value.split(',').map(item => item.trim());
-                                        setData('metadata', metadataArray); // Store as array
+                                        setData('metadata', metadataArray);
                                     }}
                                 />
                                 <InputError message={errors.metadata} />
