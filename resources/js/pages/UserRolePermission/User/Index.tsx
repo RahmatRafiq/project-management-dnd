@@ -10,7 +10,7 @@ import { User } from '@/types/UserRolePermission';
 import clsx from 'clsx';
 
 const columns = (filter: string) => [
-  { data: 'id', title: 'ID' },
+  { data: 'reference', title: 'Reference' },
   { data: 'name', title: 'Name' },
   { data: 'email', title: 'Email' },
   { data: 'roles', title: 'Role(s)' },
