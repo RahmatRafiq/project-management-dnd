@@ -6,8 +6,8 @@ import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
 import DataTableWrapper, { DataTableWrapperRef } from '@/components/datatables';
 import { BreadcrumbItem } from '@/types';
-import clsx from 'clsx';
 import { Project } from '@/types/Projects';
+import ToggleTabs from '@/components/toggle-tabs';
 
 const columns = (filter: string) => [
   { data: 'reference', title: 'Reference' },
@@ -75,7 +75,7 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
         root.render(
           <Link
             href={`/projects/${id}/edit`}
-            className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+            className="inline-block ml-2 px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 text-center"
           >
             Edit
           </Link>
@@ -103,27 +103,6 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
     });
   };
 
-  const renderToggleTabs = () => {
-    const tabs = ['active', 'trashed', 'all'];
-    return (
-      <div className="inline-flex gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setFilter(tab)}
-            className={clsx(
-              'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-              filter === tab
-                ? 'bg-white shadow-xs dark:bg-neutral-700 dark:text-neutral-100'
-                : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black dark:text-neutral-400 dark:hover:bg-neutral-700/60'
-            )}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
-      </div>
-    );
-  };
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
@@ -138,7 +117,11 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
               <Button>Create Project</Button>
             </Link>
           </div>
-          <div className="mb-4">{renderToggleTabs()}</div>
+
+          <div className="mb-4">
+            <ToggleTabs tabs={['active', 'trashed', 'all']} active={filter} onChange={setFilter} />
+          </div>
+
           {success && (
             <div className="p-2 mb-2 bg-green-100 text-green-800 rounded">{success}</div>
           )}
