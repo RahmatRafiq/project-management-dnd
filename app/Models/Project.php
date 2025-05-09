@@ -29,7 +29,6 @@ class Project extends Model
      * @var array
      */
     protected $fillable = [
-        'id',
         'reference',
         'name',
         'description',
@@ -47,15 +46,21 @@ class Project extends Model
         'is_active' => 'boolean',
     ];
 
-   
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($project) {
+            if (empty($project->id)) {
+                $project->id = (string) \Illuminate\Support\Str::uuid();
+            }
             if (empty($project->reference)) {
                 $project->reference = 'TASK-' . strtoupper(uniqid());
             }
         });
+    }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
     }
 }
