@@ -4,7 +4,8 @@ export interface Task {
     project_id: string;
     title: string;
     details?: string | null;
-    due_date?: string | null;
+    start_date?: string | null;
+    end_date?: string | null;
     done: boolean;
     tags?: { [key: string]: string | number | boolean }[] | null;
     created_at: string;

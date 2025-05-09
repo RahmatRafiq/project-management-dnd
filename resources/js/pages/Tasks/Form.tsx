@@ -33,7 +33,8 @@ export default function TaskForm({
         project_id: task?.project_id ?? '',
         title: task?.title ?? '',
         details: task?.details ?? '',
-        due_date: task?.due_date ?? '',
+        start_date: task?.start_date ?? '',
+        end_date: task?.end_date ?? '',
         done: task?.done ?? false,
         tags: task?.tags ?? [],
         user_ids: Array.isArray(task?.assigned_users)
@@ -129,14 +130,25 @@ export default function TaskForm({
                             </div>
 
                             <div>
-                                <Label htmlFor="due_date">Due Date</Label>
+                                <Label htmlFor="start_date">Start Date</Label>
                                 <Input
-                                    id="due_date"
+                                    id="start_date"
                                     type="datetime-local"
-                                    value={data.due_date}
-                                    onChange={e => setData('due_date', e.target.value)}
+                                    value={data.start_date}
+                                    onChange={e => setData('start_date', e.target.value)}
                                 />
-                                <InputError message={errors.due_date} />
+                                <InputError message={errors.start_date} />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="end_date">End Date</Label>
+                                <Input
+                                    id="end_date"
+                                    type="datetime-local"
+                                    value={data.end_date}
+                                    onChange={e => setData('end_date', e.target.value)}
+                                />
+                                <InputError message={errors.end_date} />
                             </div>
 
                             <div>
