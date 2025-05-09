@@ -14,7 +14,7 @@ const columns = (filter: string) => [
     { data: 'reference', title: 'Reference' },
     { data: 'title', title: 'Title' },
     { data: 'project', title: 'Project' },
-    { data: 'due_date', title: 'Due Date' },
+    { data: 'date_end', title: 'Due Date' },
     {
         data: 'done',
         title: 'Done',

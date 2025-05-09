@@ -43,7 +43,7 @@ class TaskController extends Controller
             });
         }
 
-        $columns = ['reference', 'title', 'project_id', 'due_date', 'done'];
+        $columns = ['reference', 'title', 'project_id', 'date_start', 'date_end', 'done'];
         if ($request->filled('order')) {
             $col = $columns[$request->order[0]['column']] ?? 'reference';
             $query->orderBy($col, $request->order[0]['dir']);
@@ -51,14 +51,15 @@ class TaskController extends Controller
 
         $data         = DataTable::paginate($query, $request);
         $data['data'] = collect($data['data'])->map(fn($task) => [
-            'id'        => $task->id,
-            'reference' => $task->reference,
-            'title'     => $task->title,
-            'project'   => $task->project->name,
-            'due_date'  => $task->due_date?->toDateString(),
-            'done'      => $task->done,
-            'trashed'   => $task->trashed(),
-            'actions'   => '',
+            'id'         => $task->id,
+            'reference'  => $task->reference,
+            'title'      => $task->title,
+            'project'    => $task->project->name,
+            'date_start' => $task->start_date,
+            'date_end'   => $task->end_date,
+            'done'       => $task->done,
+            'trashed'    => $task->trashed(),
+            'actions'    => '',
         ]);
 
         return response()->json($data);
@@ -133,7 +134,7 @@ class TaskController extends Controller
         $task->update($request->only([
             'project_id', 'title', 'details', 'start_date', 'end_date', 'done', 'tags',
         ]));
-        
+
         if ($request->filled('user_ids')) {
             $task->users()->sync($request->input('user_ids'));
         } else {
