@@ -28,7 +28,7 @@ const mainNavItems: NavItem[] = [
                 title: 'Roles',
                 href: '/roles',
                 icon: Shield,
-            },  
+            },
             {
                 title: 'Permissions',
                 href: '/permissions',
@@ -46,6 +46,12 @@ const mainNavItems: NavItem[] = [
         href: '/projects',
         icon: Folder,
     },
+    {
+        title: 'Tasks',
+        href: '/tasks',
+        icon: Folder,
+    },
+
 ];
 
 const footerNavItems: NavItem[] = [

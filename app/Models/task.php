@@ -3,47 +3,65 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Task extends Model
+class Task extends Model implements HasMedia
 {
-    use SoftDeletes;
+    use SoftDeletes, InteractsWithMedia;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
+    public $incrementing = false;
+    protected $keyType   = 'uuid';
+    protected $fillable  = [
         'reference',
         'project_id',
         'title',
         'details',
-        'due_date',
+        'start_date',
+        'end_date',
         'done',
         'tags',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
     protected $casts = [
-        'done'     => 'boolean',
-        'tags'     => 'array',
-        'due_date' => 'datetime',
+        'due_date'   => 'datetime',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'done'       => 'boolean',
+        'tags'       => 'array',
     ];
 
-    /**
-     * Boot method to handle model events.
-     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function assignedUsers()
+    {
+        return $this->users();
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($model) {
-            $model->reference = $model->reference ?? 'TASK-' . strtoupper(uniqid());
+        static::creating(function ($task) {
+            if (empty($task->id)) {
+                $task->id = (string) \Illuminate\Support\Str::uuid();
+            }
+            if (empty($task->reference)) {
+                $task->reference = 'TASK-' . strtoupper(uniqid());
+            }
         });
     }
 }
