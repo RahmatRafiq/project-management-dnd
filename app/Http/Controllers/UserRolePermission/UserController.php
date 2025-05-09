@@ -56,11 +56,11 @@ class UserController extends Controller
         $data['data'] = collect($data['data'])->map(function ($user) {
             return [
                 'reference' => $user->reference,
-                'name'    => $user->name,
-                'email'   => $user->email,
-                'roles'   => $user->roles->pluck('name')->toArray(),
-                'trashed' => $user->trashed(),
-                'actions' => '',
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'roles'     => $user->roles->pluck('name')->toArray(),
+                'trashed'   => $user->trashed(),
+                'actions'   => '',
             ];
         });
 
@@ -98,8 +98,8 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user  = User::withTrashed()->findOrFail($id);
-        $roles = Role::all();
+        $user          = User::withTrashed()->with('roles')->findOrFail($id);
+        $roles         = Role::all();
         $user->role_id = $user->roles->first()->id ?? null;
         return Inertia::render('UserRolePermission/User/Form', [
             'user'  => $user,
