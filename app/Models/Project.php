@@ -55,7 +55,7 @@ class Project extends Model
                 $project->id = (string) \Illuminate\Support\Str::uuid();
             }
             if (empty($project->reference)) {
-                $project->reference = 'TASK-' . strtoupper(uniqid());
+                $project->reference = 'PROJ-' . strtoupper(uniqid());
             }
         });
     }
