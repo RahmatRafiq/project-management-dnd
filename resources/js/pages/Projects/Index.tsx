@@ -38,7 +38,7 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
   const dtRef = useRef<DataTableWrapperRef>(null);
   const [filter, setFilter] = useState(initialFilter || 'active');
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     router.delete(route('projects.destroy', id), {
       onSuccess: () => dtRef.current?.reload(),
     });
@@ -77,7 +77,7 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
     document.querySelectorAll('.btn-delete').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        if (id) handleDelete(Number(id));
+        if (id) handleDelete(String(id));
       });
     });
     document.querySelectorAll('.btn-restore').forEach((btn) => {
