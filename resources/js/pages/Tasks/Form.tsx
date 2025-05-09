@@ -129,26 +129,28 @@ export default function TaskForm({
                                 <InputError message={errors.details} />
                             </div>
 
-                            <div>
-                                <Label htmlFor="start_date">Start Date</Label>
-                                <Input
-                                    id="start_date"
-                                    type="datetime-local"
-                                    value={data.start_date}
-                                    onChange={e => setData('start_date', e.target.value)}
-                                />
-                                <InputError message={errors.start_date} />
-                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="start_date">Start Date</Label>
+                                    <Input
+                                        id="start_date"
+                                        type="datetime-local"
+                                        value={data.start_date}
+                                        onChange={e => setData('start_date', e.target.value)}
+                                    />
+                                    <InputError message={errors.start_date} />
+                                </div>
 
-                            <div>
-                                <Label htmlFor="end_date">End Date</Label>
-                                <Input
-                                    id="end_date"
-                                    type="datetime-local"
-                                    value={data.end_date}
-                                    onChange={e => setData('end_date', e.target.value)}
-                                />
-                                <InputError message={errors.end_date} />
+                                <div>
+                                    <Label htmlFor="end_date">End Date</Label>
+                                    <Input
+                                        id="end_date"
+                                        type="datetime-local"
+                                        value={data.end_date}
+                                        onChange={e => setData('end_date', e.target.value)}
+                                    />
+                                    <InputError message={errors.end_date} />
+                                </div>
                             </div>
 
                             <div>
