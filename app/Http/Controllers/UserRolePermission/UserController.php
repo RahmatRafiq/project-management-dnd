@@ -55,6 +55,7 @@ class UserController extends Controller
 
         $data['data'] = collect($data['data'])->map(function ($user) {
             return [
+                'id'        => $user->id,
                 'reference' => $user->reference,
                 'name'      => $user->name,
                 'email'     => $user->email,
