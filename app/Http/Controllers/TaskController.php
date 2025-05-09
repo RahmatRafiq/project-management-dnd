@@ -78,7 +78,8 @@ class TaskController extends Controller
             'project_id' => 'required|uuid|exists:projects,id',
             'title'      => 'required|string|max:255',
             'details'    => 'nullable|string',
-            'due_date'   => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date',
             'done'       => 'boolean',
             'tags'       => 'nullable|array',
             'user_ids'   => 'nullable|array',
@@ -87,7 +88,7 @@ class TaskController extends Controller
         ]);
 
         $task = Task::create($request->only([
-            'project_id', 'title', 'details', 'due_date', 'done', 'tags',
+            'project_id', 'title', 'details', 'start_date', 'end_date', 'done', 'tags',
         ]));
 
         if ($request->filled('user_ids')) {
@@ -120,7 +121,8 @@ class TaskController extends Controller
             'project_id' => 'required|uuid|exists:projects,id',
             'title'      => 'required|string|max:255',
             'details'    => 'nullable|string',
-            'due_date'   => 'nullable|date',
+            'start_date' => 'nullable|date',
+            'end_date'   => 'nullable|date|after_or_equal:start_date',
             'done'       => 'boolean',
             'tags'       => 'nullable|array',
             'user_ids'   => 'nullable|array',
@@ -128,8 +130,10 @@ class TaskController extends Controller
             'pdf'        => 'nullable|file|mimes:pdf|max:500',
         ]);
 
-        $task->update($request->only(['project_id', 'title', 'details', 'due_date', 'done', 'tags']));
-
+        $task->update($request->only([
+            'project_id', 'title', 'details', 'start_date', 'end_date', 'done', 'tags',
+        ]));
+        
         if ($request->filled('user_ids')) {
             $task->users()->sync($request->input('user_ids'));
         } else {
