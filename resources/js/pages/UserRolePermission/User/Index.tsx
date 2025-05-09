@@ -58,7 +58,6 @@ export default function UserIndex({ filter: initialFilter, success }: { filter: 
   };
 
   const drawCallback = () => {
-    // Render tombol Edit dengan React
     document.querySelectorAll('.inertia-link-cell').forEach((cell) => {
       const id = cell.getAttribute('data-id');
       if (id) {
@@ -74,7 +73,6 @@ export default function UserIndex({ filter: initialFilter, success }: { filter: 
       }
     });
 
-    // Attach event listener untuk tombol Delete, Restore, dan Force Delete
     document.querySelectorAll('.btn-delete').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -94,7 +92,6 @@ export default function UserIndex({ filter: initialFilter, success }: { filter: 
       });
     });
   };
-
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
