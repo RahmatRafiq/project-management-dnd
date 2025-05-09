@@ -50,17 +50,23 @@ class TaskController extends Controller
         }
 
         $data         = DataTable::paginate($query, $request);
-        $data['data'] = collect($data['data'])->map(fn($task) => [
-            'id'         => $task->id,
-            'reference'  => $task->reference,
-            'title'      => $task->title,
-            'project'    => $task->project->name,
-            'date_start' => $task->start_date,
-            'date_end'   => $task->end_date,
-            'done'       => $task->done,
-            'trashed'    => $task->trashed(),
-            'actions'    => '',
-        ]);
+        $data['data'] = collect($data['data'])->map(function ($task) {
+            $now = now();
+            $endDate = $task->end_date ? \Carbon\Carbon::parse($task->end_date) : null;
+            $countdown = $endDate ? $endDate->diff($now)->format('%d days %h hours') : null;
+
+            return [
+                'id'         => $task->id,
+                'reference'  => $task->reference,
+                'title'      => $task->title,
+                'project'    => $task->project->name,
+                'date_start' => $task->start_date,
+                'date_end'   => $countdown,
+                'done'       => $task->done,
+                'trashed'    => $task->trashed(),
+                'actions'    => '',
+            ];
+        });
 
         return response()->json($data);
     }
