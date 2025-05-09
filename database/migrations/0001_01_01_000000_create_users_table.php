@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('reference')->unique();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('provider')->nullable();
             $table->rememberToken();
             $table->timestamps();
-            $table->softDeletes(); // Add soft deletes
+            $table->softDeletes(); 
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

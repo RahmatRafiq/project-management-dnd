@@ -22,6 +22,7 @@ class User extends Authenticatable implements HasMedia
      * @var list<string>
      */
     protected $fillable = [
+        'reference',
         'name',
         'email',
         'password',
@@ -67,4 +68,17 @@ class User extends Authenticatable implements HasMedia
             });
     }
 
+    /**
+     * Generate a reference for the user.
+     *
+     * @return void
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->reference = $model->reference ?? 'USER-' . strtoupper(uniqid());
+        });
+    }
 }

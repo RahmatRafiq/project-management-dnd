@@ -1,10 +1,9 @@
 <?php
-
 namespace Database\Seeders;
 
+use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
-use Faker\Factory as Faker;
 
 class RoleSeeder extends Seeder
 {
@@ -12,9 +11,13 @@ class RoleSeeder extends Seeder
     {
         $faker = Faker::create();
 
+        Role::firstOrCreate([
+            'name' => 'admin',
+        ]);
+
         for ($i = 0; $i < 20; $i++) {
             Role::firstOrCreate([
-                'name' => $faker->unique()->jobTitle(), // Misal: "Project Manager", "Software Tester"
+                'name' => $faker->unique()->jobTitle(),
             ]);
         }
     }
