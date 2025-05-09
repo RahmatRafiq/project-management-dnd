@@ -78,7 +78,10 @@ class User extends Authenticatable implements HasMedia
         parent::boot();
 
         static::creating(function ($model) {
+            $model->id = $model->id ?? \Illuminate\Support\Str::uuid()->toString();
+
             $model->reference = $model->reference ?? 'USER-' . strtoupper(uniqid());
         });
     }
+
 }
