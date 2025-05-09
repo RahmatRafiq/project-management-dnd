@@ -36,9 +36,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('users/trashed', [\App\Http\Controllers\UserRolePermission\UserController::class, 'trashed'])->name('users.trashed');
     Route::post('users/{user}/restore', [\App\Http\Controllers\UserRolePermission\UserController::class, 'restore'])->name('users.restore');
     Route::delete('users/{user}/force-delete', [\App\Http\Controllers\UserRolePermission\UserController::class, 'forceDelete'])->name('users.force-delete');
-
+    
+    Route::post('projects/json', [\App\Http\Controllers\ProjectController::class, 'json'])->name('projects.json');
+    Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+    Route::get('projects/trashed', [\App\Http\Controllers\ProjectController::class, 'trashed'])->name('projects.trashed');
+    Route::post('projects/{project}/restore', [\App\Http\Controllers\ProjectController::class, 'restore'])->name('projects.restore');
+    Route::delete('projects/{project}/force-delete', [\App\Http\Controllers\ProjectController::class, 'forceDelete'])->name('projects.force-delete');
+    
     Route::post('logout', [SocialAuthController::class, 'logout'])->name('logout');
-
 });
 Route::get('/dashboard/activity-logs', function () {
     return Inertia::render('ActivityLogList');

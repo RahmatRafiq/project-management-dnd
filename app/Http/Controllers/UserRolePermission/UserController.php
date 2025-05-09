@@ -45,7 +45,7 @@ class UserController extends Controller
             });
         }
 
-        $columns = ['id', 'name', 'email', 'created_at', 'updated_at'];
+        $columns = ['reference', 'name', 'email', 'created_at', 'updated_at'];
         if ($request->filled('order')) {
             $orderColumn = $columns[$request->order[0]['column']] ?? 'id';
             $query->orderBy($orderColumn, $request->order[0]['dir']);
@@ -55,12 +55,13 @@ class UserController extends Controller
 
         $data['data'] = collect($data['data'])->map(function ($user) {
             return [
-                'id'      => $user->id,
-                'name'    => $user->name,
-                'email'   => $user->email,
-                'roles'   => $user->roles->pluck('name')->toArray(),
-                'trashed' => $user->trashed(),
-                'actions' => '',
+                'id'        => $user->id,
+                'reference' => $user->reference,
+                'name'      => $user->name,
+                'email'     => $user->email,
+                'roles'     => $user->roles->pluck('name')->toArray(),
+                'trashed'   => $user->trashed(),
+                'actions'   => '',
             ];
         });
 
@@ -98,8 +99,8 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user  = User::withTrashed()->findOrFail($id);
-        $roles = Role::all();
+        $user          = User::withTrashed()->with('roles')->findOrFail($id);
+        $roles         = Role::all();
         $user->role_id = $user->roles->first()->id ?? null;
         return Inertia::render('UserRolePermission/User/Form', [
             'user'  => $user,

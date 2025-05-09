@@ -81,4 +81,5 @@ class User extends Authenticatable implements HasMedia
             $model->reference = $model->reference ?? 'USER-' . strtoupper(uniqid());
         });
     }
+
 }

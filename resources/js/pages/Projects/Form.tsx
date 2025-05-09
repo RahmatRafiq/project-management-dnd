@@ -1,0 +1,121 @@
+import { Head, useForm, Link } from '@inertiajs/react';
+import { FormEvent } from 'react';
+import HeadingSmall from '@/components/heading-small';
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem } from '@/types';
+import { Project } from '@/types/Projects';
+import { Textarea } from '@headlessui/react';
+
+export default function ProjectForm({ project }: { project?: Project }) {
+    const isEdit = !!project;
+    const { data, setData, post, put, processing, errors } = useForm({
+        reference: project ? project.reference : '',
+        name: project ? project.name : '',
+        description: project ? project.description : '',
+        metadata: project && project.metadata ? project.metadata : [] as string[], // Initialize as array
+        is_active: project ? project.is_active : true,
+    });
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Projects', href: '/projects' },
+        { title: isEdit ? 'Edit Project' : 'Create Project', href: '#' },
+    ];
+
+    const handleSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        if (isEdit) {
+            put(route('projects.update', project!.id));
+        } else {
+            post(route('projects.store'));
+        }
+    };
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={isEdit ? 'Edit Project' : 'Create Project'} />
+            <div className="px-4 py-6">
+                <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
+
+                <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+                    {/* Content */}
+                    <div className="flex-1 md:max-w-2xl space-y-6">
+                        <HeadingSmall
+                            title={isEdit ? 'Edit Project' : 'Create Project'}
+                            description="Fill in the details below"
+                        />
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <Label htmlFor="name">Project Name</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    required
+                                />
+                                <InputError message={errors.name} />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="description">Description</Label>
+                                <Textarea
+                                    id="description"
+                                    value={data.description ?? ''}
+                                    onChange={(e) => setData('description', e.target.value)}
+                                    className="w-full p-2 border rounded-md"
+                                    rows={3}
+                                    onInput={(e) => {
+                                        const target = e.target as HTMLTextAreaElement;
+                                        target.style.height = 'auto';
+                                        target.style.height = `${target.scrollHeight}px`;
+                                    }}
+                                />
+                                <InputError message={errors.description} />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="metadata">Metadata</Label>
+                                <Input
+                                    id="metadata"
+                                    type="text"
+                                    value={Array.isArray(data.metadata) ? data.metadata.join(', ') : ''} // Ensure metadata is an array
+                                    onChange={(e) => {
+                                        const metadataArray = e.target.value.split(',').map(item => item.trim());
+                                        setData('metadata', metadataArray); // Store as array
+                                    }}
+                                />
+                                <InputError message={errors.metadata} />
+                            </div>
+
+                            <div>
+                                <Label htmlFor="is_active">Is Active</Label>
+                                <Checkbox
+                                    id="is_active"
+                                    checked={data.is_active}
+                                    onChange={(e) => setData('is_active', (e.target as HTMLInputElement).checked)}
+                                />
+                            </div>
+
+                            <div className="flex items-center space-x-4">
+                                <Button disabled={processing}>
+                                    {isEdit ? 'Update Project' : 'Create Project'}
+                                </Button>
+                                <Link
+                                    href={route('projects.index')}
+                                    className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted/70"
+                                >
+                                    Cancel
+                                </Link>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </AppLayout>
+    );
+}

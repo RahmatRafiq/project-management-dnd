@@ -41,6 +41,11 @@ const mainNavItems: NavItem[] = [
             },
         ],
     },
+    {
+        title: 'Projects',
+        href: '/projects',
+        icon: Folder,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
