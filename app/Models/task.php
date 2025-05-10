@@ -73,10 +73,17 @@ class Task extends Model implements HasMedia
             ->logOnlyDirty()
             ->useLogName('Task')
             ->setDescriptionForEvent(function (string $eventName) {
-                $causerName = auth()->user() ? auth()->user()->name : 'Unknown User'; 
+                $causerName = auth()->user()->name ?? 'Unknown User';
                 $taskTitle  = $this->title;
 
-                return "{$causerName} has {$eventName} Task '{$taskTitle}'";
+                $dirty = collect($this->getDirty())
+                    ->except('updated_at')
+                    ->keys()
+                    ->implode(', ');
+
+                $changedText = $dirty ? ". Changed: {$dirty}" : '';
+
+                return "{$causerName} has {$eventName} Task '{$taskTitle}'{$changedText}";
             });
     }
 }
