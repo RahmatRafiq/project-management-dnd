@@ -51,6 +51,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
     Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
 
+    Route::post('activity-logs/json', [ActivityLogController::class, 'jsonBySubject'])->name('activity-logs.json');
+
     Route::post('logout', [SocialAuthController::class, 'logout'])->name('logout');
 });
 Route::get('/dashboard/activity-logs', function () {

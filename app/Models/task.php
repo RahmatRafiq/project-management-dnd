@@ -3,12 +3,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Task extends Model implements HasMedia
 {
-    use SoftDeletes, InteractsWithMedia;
+    use SoftDeletes, InteractsWithMedia, LogsActivity;
 
     public $incrementing = false;
     protected $keyType   = 'uuid';
@@ -63,5 +65,25 @@ class Task extends Model implements HasMedia
                 $task->reference = 'TASK-' . strtoupper(uniqid());
             }
         });
+    }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['reference', 'project_id', 'title', 'details', 'start_date', 'end_date', 'done', 'tags'])
+            ->logOnlyDirty()
+            ->useLogName('Task')
+            ->setDescriptionForEvent(function (string $eventName) {
+                $causerName = auth()->user()->name ?? 'Unknown User';
+                $taskTitle  = $this->title;
+
+                $dirty = collect($this->getDirty())
+                    ->except('updated_at')
+                    ->keys()
+                    ->implode(', ');
+
+                $changedText = $dirty ? ". Changed: {$dirty}" : '';
+
+                return "{$causerName} has {$eventName} Task '{$taskTitle}'{$changedText}";
+            });
     }
 }

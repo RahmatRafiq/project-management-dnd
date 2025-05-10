@@ -22,10 +22,18 @@ export default function TaskForm({
     task,
     projects,
     users,
+    activities,
 }: {
     task?: Task;
     projects: Project[];
     users: User[];
+    activities?: {
+        time: string;
+        user: string;
+        event: string;
+        changes: Record<string, string | number | boolean>;
+        old: Record<string, string | number | boolean>;
+    }[];
 }) {
     const isEdit = Boolean(task);
 
@@ -196,6 +204,46 @@ export default function TaskForm({
                                 </Link>
                             </div>
                         </form>
+
+                        {isEdit && (activities ?? []).length > 0 && (
+                            <div className="mt-8">
+                                <h2 className="text-lg font-semibold mb-2">Audit Trail</h2>
+                                <table className="table-auto w-full border-collapse border border-gray-300">
+                                    <thead>
+                                        <tr className="bg-gray-100">
+                                            <th className="border border-gray-300 px-4 py-2 text-left">Time</th>
+                                            <th className="border border-gray-300 px-4 py-2 text-left">User</th>
+                                            <th className="border border-gray-300 px-4 py-2 text-left">Event</th>
+                                            <th className="border border-gray-300 px-4 py-2 text-left">Changes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {(activities ?? []).map((a, i) => (
+                                            <tr key={i} className="hover:bg-gray-50">
+                                                <td className="border border-gray-300 px-4 py-2">{a.time}</td>
+                                                <td className="border border-gray-300 px-4 py-2">{a.user}</td>
+                                                <td className="border border-gray-300 px-4 py-2">{a.event}</td>
+                                                <td className="border border-gray-300 px-4 py-2">
+                                                    {Object.keys(a.changes).length > 0 ? (
+                                                        <ul className="list-disc ml-4">
+                                                            {Object.entries(a.changes).map(([key, value]) => (
+                                                                <li key={key}>
+                                                                    <strong>{key}</strong>: "
+                                                                    {typeof a.old?.[key] === 'object' ? JSON.stringify(a.old[key]) : a.old?.[key]}" → "
+                                                                    {typeof value === 'object' ? JSON.stringify(value) : value}"
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    ) : (
+                                                        'No changes'
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

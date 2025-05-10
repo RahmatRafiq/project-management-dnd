@@ -1,9 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { useRef, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import { Card } from '@/components/ui/card';
+import DataTableWrapper, { DataTableWrapperRef } from '@/components/datatables';
 import '@/echo';
 
+interface ActivityLog {
+  id: number;
+  description: string;
+  subject_type: string;
+  event: string;
+  causer_name: string;
+  causer_id: number;
+  created_at: string;
+}
 declare global {
   interface Window {
     Echo: {
@@ -14,90 +23,94 @@ declare global {
     };
   }
 }
+type Subject = 'User' | 'Project' | 'Task';
 
-interface ActivityLog {
-  id: number;
-  description: string;
-  subject_type: string;
-  event: string;
-  causer_type: string;
-  causer_id: number;
-  properties?: {
-    old?: Record<string, unknown>;
-    attributes?: Record<string, unknown>;
-  };
-  created_at: string;
-}
-
-import { PageProps as InertiaPageProps } from '@inertiajs/core';
-
-interface PageProps extends InertiaPageProps {
-  initialLogs: ActivityLog[];
+interface DataTableRequest extends Record<string, unknown> {
+  subject?: Subject;
+  filterEvent?: string;
 }
 
 export default function ActivityLogList() {
-  // Ambil data awal dari props Inertia
-  const { initialLogs } = usePage<PageProps>().props;
-  const [logs, setLogs] = useState<ActivityLog[]>(initialLogs || []);
+  const userRef = useRef<DataTableWrapperRef>(null);
+  const projectRef = useRef<DataTableWrapperRef>(null);
+  const taskRef = useRef<DataTableWrapperRef>(null);
 
   useEffect(() => {
-    // Subscribe ke channel 'activity-logs' dan listen event 'ActivityLogCreated'
-    window.Echo.channel('activity-logs')
-      .listen('ActivityLogCreated', (data: ActivityLog) => {
-        console.log('Received event:', data);
-        setLogs((prev) => [data, ...prev]);
-      });
-
-    return () => {
-      window.Echo.leave('activity-logs');
+    const channel = window.Echo.channel('activity-logs');
+    const onEvent = (data: ActivityLog) => {
+      const model = data.subject_type.split('\\').pop();
+      if (model === 'User') userRef.current?.reload();
+      if (model === 'Project') projectRef.current?.reload();
+      if (model === 'Task') taskRef.current?.reload();
     };
+    channel.listen('ActivityLogCreated', onEvent);
+    return () => void window.Echo.leave('activity-logs');
   }, []);
 
-  const renderProperties = (properties: ActivityLog['properties']) => {
-    if (!properties || !properties.old || !properties.attributes) return null;
-    return (
-      <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded">
-        <strong className="block text-gray-700 mb-1">Perubahan:</strong>
-        <ul className="list-disc ml-5 text-sm text-gray-600">
-          {Object.keys(properties.attributes).map((key) => (
-            <li key={key}>
-              {key}:{' '}
-              <span className="line-through text-red-500">
-                {properties.old![key]?.toString()}
-              </span>{' '}
-              →{' '}
-              <span className="text-green-600">
-                {properties.attributes![key]?.toString()}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
+  function buildConfig(subject: Subject) {
+    return {
+      ajax: {
+        url: route('activity-logs.json'),
+        type: 'POST' as const,
+        data: (d: DataTableRequest) => {
+          d.subject = subject;
+          d.filterEvent = 'all';
+        }
+      },
+      columns: [
+        { data: 'created_at', title: 'Waktu' },
+        { data: 'causer_name', title: 'User' },
+        { data: 'description', title: 'Deskripsi' },
+        {
+          data: 'event',
+          title: 'Event',
+          render: (data: null) => {
+            const evt = String(data); 
+            const base = 'px-2 inline-flex text-xs font-semibold rounded-full';
+            let classes = '';
+            switch (evt) {
+              case 'created':
+                classes = 'bg-green-100 text-green-800';
+                break;
+              case 'updated':
+                classes = 'bg-yellow-100 text-yellow-800';
+                break;
+              case 'deleted':
+                classes = 'bg-red-100 text-red-800';
+                break;
+              default:
+                classes = 'bg-gray-100 text-gray-800';
+            }
+            return `<span class="${base} ${classes}">${evt}</span>`;
+          }
+        },
+      ],
+      options: {
+        serverSide: true,
+        processing: true,
+        searching: true,
+        ordering: false,
+        lengthMenu: [5, 10, 20] as const,
+      }
+    };
+  }
 
   return (
     <AppLayout breadcrumbs={[{ title: 'Activity Logs', href: '/dashboard/activity-logs' }]}>
-      <Head title="Live Activity Logs" />
-      <div className="px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6">Live Activity Logs</h1>
-        {logs.length === 0 ? (
-          <p className="text-gray-500">Tidak ada log saat ini.</p>
-        ) : (
-          logs.map((log) => (
-            <Card key={log.id} className="border border-gray-200 shadow-sm rounded-lg p-4 mb-4">
-              <div className="mb-2">
-                <p className="text-lg font-medium text-gray-800">{log.description}</p>
-                <p className="text-sm text-gray-500">[{log.event}]</p>
-              </div>
-              <div className="text-xs text-gray-500 mb-2">
-                {log.subject_type} by <span className="font-semibold">{log.causer_type}</span>{' '}
-                #{log.causer_id} on {new Date(log.created_at).toLocaleString()}
-              </div>
-              {renderProperties(log.properties)}
-            </Card>
-          ))
-        )}
+      <Head title="Activity Logs by Model" />
+      <div className="px-4 py-6 space-y-8">
+        <section>
+          <h2 className="text-xl font-semibold mb-3">User Activity</h2>
+          <DataTableWrapper ref={userRef} {...buildConfig('User')} />
+        </section>
+        <section>
+          <h2 className="text-xl font-semibold mb-3">Project Activity</h2>
+          <DataTableWrapper ref={projectRef} {...buildConfig('Project')} />
+        </section>
+        <section>
+          <h2 className="text-xl font-semibold mb-3">Task Activity</h2>
+          <DataTableWrapper ref={taskRef} {...buildConfig('Task')} />
+        </section>
       </div>
     </AppLayout>
   );
