@@ -20,11 +20,12 @@ class ActivityLogController extends Controller
     {
         $search      = $request->input('search.value', '');
         $filterEvent = $request->input('filterEvent', 'all');
-        $subject     = $request->input('subject', 'all'); // e.g. 'User','Project','Task','all'
+        $subject     = $request->input('subject', 'all');
 
         $query = Activity::with('causer')
             ->when($filterEvent !== 'all', fn($q) => $q->where('event', $filterEvent))
-            ->when($subject !== 'all', fn($q) => $q->where('subject_type', "App\\Models\\{$subject}"));
+            ->when($subject !== 'all', fn($q) => $q->where('subject_type', "App\\Models\\{$subject}"))
+            ->latest();
 
         if ($search) {
             $query->where(function ($q) use ($search) {

@@ -67,17 +67,18 @@ class Project extends Model implements HasMedia
     {
         return $this->hasMany(Task::class);
     }
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly(['name', 'description', 'metadata', 'is_active'])
-            ->logOnlyDirty()
-            ->useLogName('Project')
-            ->setDescriptionForEvent(function (string $eventName) {
-                $causerName = auth()->user() ? auth()->user()->name : 'Unknown User'; 
-                $taskTitle  = $this->title;
+public function getActivitylogOptions(): LogOptions
+{
+    return LogOptions::defaults()
+        ->logOnly(['name', 'description', 'metadata', 'is_active'])
+        ->logOnlyDirty()
+        ->useLogName('Project')
+        ->setDescriptionForEvent(function (string $eventName) {
+            $causerName   = auth()->user() ? auth()->user()->name : 'Unknown User';
+            $projectName  = $this->name;           
 
-                return "{$causerName} has {$eventName} Task '{$taskTitle}'";
-            });
-    }
+            return "{$causerName} has {$eventName} Project '{$projectName}'";
+        });
+}
+
 }
