@@ -8,6 +8,7 @@ import DataTableWrapper, { DataTableWrapperRef } from '@/components/datatables';
 import { BreadcrumbItem } from '@/types';
 import { Project } from '@/types/Projects';
 import ToggleTabs from '@/components/toggle-tabs';
+import ProjectsLayout from '@/layouts/project/layout';
 
 const columns = (filter: string) => [
   { data: 'reference', title: 'Reference' },
@@ -107,36 +108,38 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Projects" />
-      <div className="px-4 py-6">
-        <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
-        <div className="col-md-12">
-          <HeadingSmall title="Projects" description="Manage application projects" />
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Project List</h2>
-            <Link href={route('projects.create')}>
-              <Button>Create Project</Button>
-            </Link>
-          </div>
+      <ProjectsLayout>
+        <div className="px-4 py-6">
+          <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
+          <div className="col-md-12">
+            <HeadingSmall title="Projects" description="Manage application projects" />
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Project List</h2>
+              <Link href={route('projects.create')}>
+                <Button>Create Project</Button>
+              </Link>
+            </div>
 
-          <div className="mb-4">
-            <ToggleTabs tabs={['active', 'trashed', 'all']} active={filter} onChange={setFilter} />
-          </div>
+            <div className="mb-4">
+              <ToggleTabs tabs={['active', 'trashed', 'all']} active={filter} onChange={setFilter} />
+            </div>
 
-          {success && (
-            <div className="p-2 mb-2 bg-green-100 text-green-800 rounded">{success}</div>
-          )}
-          <DataTableWrapper
-            key={filter}
-            ref={dtRef}
-            ajax={{
-              url: route('projects.json') + '?filter=' + filter,
-              type: 'POST',
-            }}
-            columns={columns(filter)}
-            options={{ drawCallback }}
-          />
+            {success && (
+              <div className="p-2 mb-2 bg-green-100 text-green-800 rounded">{success}</div>
+            )}
+            <DataTableWrapper
+              key={filter}
+              ref={dtRef}
+              ajax={{
+                url: route('projects.json') + '?filter=' + filter,
+                type: 'POST',
+              }}
+              columns={columns(filter)}
+              options={{ drawCallback }}
+            />
+          </div>
         </div>
-      </div>
+      </ProjectsLayout>
     </AppLayout>
   );
 }
