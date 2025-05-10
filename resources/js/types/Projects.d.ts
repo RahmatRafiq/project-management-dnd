@@ -9,4 +9,9 @@ export interface Project {
     updated_at: string;
     deleted_at?: string | null;
     trashed?: boolean;
+    documents?: {
+        file_name: string;
+        size: number; // Added size
+        url: string;  // Added url
+    }[]; // Updated documents field
 }
