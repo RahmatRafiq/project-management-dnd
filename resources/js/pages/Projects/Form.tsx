@@ -57,30 +57,30 @@ export default function ProjectForm({ project }: { project?: Project }) {
             urlDestroy: route('projects.deleteFile'),
             csrf: csrfToken,
             acceptedFiles: '.pdf',
-            maxFiles: 0.5,
+            maxFiles: 1,
             files: initialFiles,
             kind: 'file',
+            maxFilesize: 0.5,
         });
 
-        dzInstance.current.on('sending', (file, xhr, formData) => {
+        dzInstance.current.on('sending', (_, __, formData) => {
             if (project) formData.append('project_id', project.id.toString());
             formData.append('_token', csrfToken);
         });
 
-        dzInstance.current.on('success', (file, response: { name: string; url?: string }) => {
-            setData('documents', [...data.documents, response.name]);
+        dzInstance.current.on('success', (_, response: { name: string; url?: string }) => {
+            setData('documents', Array.from(new Set([...data.documents, response.name])));
         });
 
         dzInstance.current.on('removedfile', (file) => {
+            if (!file.accepted) return;
             const fileName = file.name;
             console.log('File removed:', fileName);
-            setData('documents', data.documents.filter(f => f !== fileName));
-            console.log('Updated documents:', data.documents.filter(f => f !== fileName)); // Debugging
+            const updatedDocuments = data.documents.filter(f => f !== fileName);
+            setData('documents', updatedDocuments);
         });
+    }, [csrfToken, initialFiles, project, setData]);
 
-
-
-    }, [csrfToken]); // Tambahkan data.documents sebagai dependency
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

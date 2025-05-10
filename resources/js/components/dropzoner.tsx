@@ -19,12 +19,13 @@ interface DropzoneOptions {
   files?: FileData[];
   maxFiles: number;
   kind: string;
+  maxFilesize: number;
 }
 
 const Dropzoner = (
   element: HTMLElement | null,
   key: string,
-  { urlStore, urlDestroy, csrf, acceptedFiles, files, maxFiles, kind }: DropzoneOptions
+  { urlStore, urlDestroy, csrf, acceptedFiles, files, maxFiles, kind, maxFilesize }: DropzoneOptions
 ): Dropzone => {
   if (!element) throw new Error('Element not found');
   if (!urlStore) throw new Error('URL Store not found');
@@ -32,6 +33,7 @@ const Dropzoner = (
   if (!acceptedFiles) throw new Error('Accepted Files not found');
   if (!maxFiles) throw new Error('Max Files not found');
   if (!kind) throw new Error('Kind not found');
+  if (!maxFilesize) throw new Error('Max Filesize not found');
 
   console.log('Dropzoner initialized');
 
@@ -40,6 +42,7 @@ const Dropzoner = (
     headers: { 'X-CSRF-TOKEN': csrf },
     acceptedFiles: acceptedFiles,
     maxFiles: maxFiles,
+    maxFilesize: maxFilesize, 
     addRemoveLinks: true,
     init: function () {
       if (files) {
@@ -115,5 +118,6 @@ const Dropzoner = (
 
   return myDropzone;
 };
+
 
 export default Dropzoner;
