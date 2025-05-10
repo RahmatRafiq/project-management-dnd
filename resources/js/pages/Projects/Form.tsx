@@ -64,6 +64,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
         dzInstance.current.on('sending', (file, xhr, formData) => {
             if (project) formData.append('project_id', project.id.toString());
+            formData.append('_token', csrfToken); // Tambahkan CSRF token
         });
 
         dzInstance.current.on('success', (file, response: { name: string; url?: string }) => {

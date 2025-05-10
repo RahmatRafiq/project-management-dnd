@@ -124,7 +124,6 @@ class ProjectController extends Controller
             'size'         => $m->size,
             'original_url' => $m->getFullUrl(),
         ]);
-// dd($documents);
         return Inertia::render('Projects/Form', [
             'project'   => $project,
             'documents' => $documents,
@@ -142,7 +141,23 @@ class ProjectController extends Controller
             'documents.*' => 'string',
         ]);
 
-        $project->clearMediaCollection('documents');
+        // Update data project
+        $project->update($request->only(['name', 'description', 'metadata', 'is_active']));
+
+        // Ambil daftar file yang ada di request
+        $newDocuments = $request->input('documents', []);
+
+        // Ambil daftar file yang ada di media collection
+        $existingMedia = $project->getMedia('documents');
+
+        // Hapus file lama yang tidak ada di daftar baru
+        foreach ($existingMedia as $media) {
+            if (! in_array($media->file_name, $newDocuments)) {
+                $media->delete();
+            }
+        }
+
+        // Tambahkan file baru ke media collection
         if ($request->filled('documents')) {
             MediaLibrary::put($project, 'documents', $request, 'documents');
         }
