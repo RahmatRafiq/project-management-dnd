@@ -4,12 +4,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\LogOptions;
 use Spatie\MediaLibrary\HasMedia;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Project extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, Notifiable, SoftDeletes, InteractsWithMedia, LogsActivity;
 
     /**
      * The primary key type.
@@ -63,5 +66,18 @@ class Project extends Model implements HasMedia
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'description', 'metadata', 'is_active'])
+            ->logOnlyDirty()
+            ->useLogName('Project')
+            ->setDescriptionForEvent(function (string $eventName) {
+                $causerName = auth()->user() ? auth()->user()->name : 'Unknown User'; 
+                $taskTitle  = $this->title;
+
+                return "{$causerName} has {$eventName} Task '{$taskTitle}'";
+            });
     }
 }
