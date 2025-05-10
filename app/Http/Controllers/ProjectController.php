@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storage;
+use Spatie\Activitylog\Models\Activity;
 
 class ProjectController extends Controller
 {
@@ -124,9 +125,24 @@ class ProjectController extends Controller
             'size'         => $m->size,
             'original_url' => $m->getFullUrl(),
         ]);
+
+        $activities = Activity::where('subject_type', Project::class)
+            ->where('subject_id', $project->id)
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get()
+            ->map(fn($activity) => [
+                'time'    => $activity->created_at->format('Y-m-d H:i:s'),
+                'user'    => $activity->causer?->name ?? 'Unknown',
+                'event'   => $activity->event,
+                'changes' => $activity->properties['attributes'] ?? [],
+                'old'     => $activity->properties['old'] ?? [],
+            ]);
+
         return Inertia::render('Projects/Form', [
-            'project'   => $project,
-            'documents' => $documents,
+            'project'    => $project,
+            'documents'  => $documents,
+            'activities' => $activities,
         ]);
     }
 

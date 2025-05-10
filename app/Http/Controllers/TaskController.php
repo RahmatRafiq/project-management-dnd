@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Activitylog\Models\Activity;
 
 class TaskController extends Controller
 {
@@ -51,8 +52,8 @@ class TaskController extends Controller
 
         $data         = DataTable::paginate($query, $request);
         $data['data'] = collect($data['data'])->map(function ($task) {
-            $now = now();
-            $endDate = $task->end_date ? \Carbon\Carbon::parse($task->end_date) : null;
+            $now       = now();
+            $endDate   = $task->end_date ? \Carbon\Carbon::parse($task->end_date) : null;
             $countdown = $endDate ? $endDate->diff($now)->format('%d days %h hours') : null;
 
             return [
@@ -115,10 +116,24 @@ class TaskController extends Controller
     {
         $task->load('assignedUsers');
 
+        $activities = Activity::where('subject_type', Task::class)
+            ->where('subject_id', $task->id)
+            ->orderByDesc('created_at')
+            ->take(10)
+            ->get()
+            ->map(fn($activity) => [
+                'time'    => $activity->created_at->format('Y-m-d H:i:s'),
+                'user'    => $activity->causer?->name ?? 'Unknown',
+                'event'   => $activity->event,
+                'changes' => $activity->properties['attributes'] ?? [],
+                'old'     => $activity->properties['old'] ?? [],
+            ]);
+
         return Inertia::render('Tasks/Form', [
-            'task'     => $task,
-            'projects' => Project::all(),
-            'users'    => User::all(),
+            'task'       => $task,
+            'projects'   => Project::all(),
+            'users'      => User::all(),
+            'activities' => $activities,
         ]);
     }
 
