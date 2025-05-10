@@ -79,14 +79,24 @@ const Dropzoner = (
     },
     removedfile: function (file) {
       fetch(urlDestroy, {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
           'X-CSRF-TOKEN': csrf,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({ filename: file.name })
       })
-        .then(res => res.json())
+        .then(async res => {
+          const text = await res.text();
+          try {
+            const data = JSON.parse(text);
+            console.log('Parsed JSON:', data);
+          } catch {
+            console.error('Failed to parse JSON:', text);
+          }
+        })
+
         .then(data => console.log(data))
         .catch(error => console.error(error));
 

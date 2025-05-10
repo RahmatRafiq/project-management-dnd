@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('tasks/{task}/restore', [\App\Http\Controllers\TaskController::class, 'restore'])->name('tasks.restore');
     Route::delete('tasks/{task}/force-delete', [\App\Http\Controllers\TaskController::class, 'forceDelete'])->name('tasks.force-delete');
     Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
-    Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteDocument'])->name('projects.deleteFile');
+    Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
 
     Route::post('logout', [SocialAuthController::class, 'logout'])->name('logout');
 });

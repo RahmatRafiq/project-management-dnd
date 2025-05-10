@@ -64,7 +64,7 @@ export default function ProjectForm({ project }: { project?: Project }) {
 
         dzInstance.current.on('sending', (file, xhr, formData) => {
             if (project) formData.append('project_id', project.id.toString());
-            formData.append('_token', csrfToken); // Tambahkan CSRF token
+            formData.append('_token', csrfToken);
         });
 
         dzInstance.current.on('success', (file, response: { name: string; url?: string }) => {
@@ -72,9 +72,15 @@ export default function ProjectForm({ project }: { project?: Project }) {
         });
 
         dzInstance.current.on('removedfile', (file) => {
-            setData('documents', data.documents.filter(f => f !== file.name));
+            const fileName = file.name;
+            console.log('File removed:', fileName);
+            setData('documents', data.documents.filter(f => f !== fileName));
+            console.log('Updated documents:', data.documents.filter(f => f !== fileName)); // Debugging
         });
-    }, [csrfToken]);
+
+
+
+    }, [csrfToken]); // Tambahkan data.documents sebagai dependency
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

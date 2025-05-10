@@ -141,23 +141,18 @@ class ProjectController extends Controller
             'documents.*' => 'string',
         ]);
 
-        // Update data project
         $project->update($request->only(['name', 'description', 'metadata', 'is_active']));
 
-        // Ambil daftar file yang ada di request
         $newDocuments = $request->input('documents', []);
 
-        // Ambil daftar file yang ada di media collection
         $existingMedia = $project->getMedia('documents');
 
-        // Hapus file lama yang tidak ada di daftar baru
         foreach ($existingMedia as $media) {
             if (! in_array($media->file_name, $newDocuments)) {
                 $media->delete();
             }
         }
 
-        // Tambahkan file baru ke media collection
         if ($request->filled('documents')) {
             MediaLibrary::put($project, 'documents', $request, 'documents');
         }
@@ -191,7 +186,7 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('success', 'Project berhasil dihapus secara permanen.');
     }
 
-    public function deleteDocument(Request $request)
+    public function deleteFile(Request $request)
     {
         $data = $request->validate(['filename' => 'required|string']);
 
@@ -206,4 +201,5 @@ class ProjectController extends Controller
 
         return response()->json(['message' => 'File berhasil dihapus'], 200);
     }
+
 }
