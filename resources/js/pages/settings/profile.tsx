@@ -72,6 +72,7 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
         maxFiles: 3,
         files: initialFiles,
         kind: 'image',
+        maxFilesize: 2,
       });
 
       dzInstance.current.on('success', function (file, response: { name: string; url?: string }) {

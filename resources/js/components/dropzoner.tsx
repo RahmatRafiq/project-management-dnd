@@ -19,12 +19,13 @@ interface DropzoneOptions {
   files?: FileData[];
   maxFiles: number;
   kind: string;
+  maxFilesize: number;
 }
 
 const Dropzoner = (
   element: HTMLElement | null,
   key: string,
-  { urlStore, urlDestroy, csrf, acceptedFiles, files, maxFiles, kind }: DropzoneOptions
+  { urlStore, urlDestroy, csrf, acceptedFiles, files, maxFiles, kind, maxFilesize }: DropzoneOptions
 ): Dropzone => {
   if (!element) throw new Error('Element not found');
   if (!urlStore) throw new Error('URL Store not found');
@@ -32,6 +33,7 @@ const Dropzoner = (
   if (!acceptedFiles) throw new Error('Accepted Files not found');
   if (!maxFiles) throw new Error('Max Files not found');
   if (!kind) throw new Error('Kind not found');
+  if (!maxFilesize) throw new Error('Max Filesize not found');
 
   console.log('Dropzoner initialized');
 
@@ -40,6 +42,7 @@ const Dropzoner = (
     headers: { 'X-CSRF-TOKEN': csrf },
     acceptedFiles: acceptedFiles,
     maxFiles: maxFiles,
+    maxFilesize: maxFilesize, 
     addRemoveLinks: true,
     init: function () {
       if (files) {
@@ -79,14 +82,24 @@ const Dropzoner = (
     },
     removedfile: function (file) {
       fetch(urlDestroy, {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
           'X-CSRF-TOKEN': csrf,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({ filename: file.name })
       })
-        .then(res => res.json())
+        .then(async res => {
+          const text = await res.text();
+          try {
+            const data = JSON.parse(text);
+            console.log('Parsed JSON:', data);
+          } catch {
+            console.error('Failed to parse JSON:', text);
+          }
+        })
+
         .then(data => console.log(data))
         .catch(error => console.error(error));
 
@@ -105,5 +118,6 @@ const Dropzoner = (
 
   return myDropzone;
 };
+
 
 export default Dropzoner;
