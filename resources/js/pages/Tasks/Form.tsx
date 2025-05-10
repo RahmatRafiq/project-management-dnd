@@ -14,6 +14,7 @@ import { User } from '@/types/UserRolePermission';
 import { Textarea } from '@headlessui/react';
 import CustomSelect from '@/components/select';
 import { MultiValue, SingleValue } from 'react-select';
+import ProjectsLayout from '@/layouts/project/layout';
 
 type ProjectOption = { value: string; label: string };
 type UserOption = { value: number; label: string };
@@ -78,175 +79,175 @@ export default function TaskForm({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={isEdit ? 'Edit Task' : 'Create Task'} />
+            <ProjectsLayout>
+                <div className="px-4 py-6">
+                    <h1 className="text-2xl font-semibold mb-4">Task Management</h1>
+                    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+                        <div className="w-full space-y-6">
+                            <HeadingSmall
+                                title={isEdit ? 'Edit Task' : 'Create Task'}
+                                description="Fill in the details below"
+                            />
 
-            <div className="px-4 py-6">
-                <h1 className="text-2xl font-semibold mb-4">Task Management</h1>
-
-                <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-                    <div className="flex-1 md:max-w-2xl space-y-6">
-                        <HeadingSmall
-                            title={isEdit ? 'Edit Task' : 'Create Task'}
-                            description="Fill in the details below"
-                        />
-
-                        <form
-                            onSubmit={handleSubmit}
-                            encType="multipart/form-data"
-                            className="space-y-4"
-                        >
-                            <div>
-                                <Label htmlFor="project_id">Project</Label>
-                                <CustomSelect<ProjectOption>
-                                    id="project_id"
-                                    options={projectOptions}
-                                    value={projectOptions.find(opt => opt.value === data.project_id) ?? null}
-                                    onChange={(newValue) => {
-                                        setData('project_id', (newValue as SingleValue<ProjectOption>)?.value ?? '');
-                                    }}
-                                />
-
-                                <InputError message={errors.project_id} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="title">Title</Label>
-                                <Input
-                                    id="title"
-                                    type="text"
-                                    value={data.title}
-                                    onChange={e => setData('title', e.target.value)}
-                                    required
-                                />
-                                <InputError message={errors.title} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="details">Details</Label>
-                                <Textarea
-                                    id="details"
-                                    value={data.details}
-                                    onChange={e => setData('details', e.target.value)}
-                                    className="w-full p-2 border rounded-md"
-                                    rows={3}
-                                    onInput={e => {
-                                        const t = e.target as HTMLTextAreaElement;
-                                        t.style.height = 'auto';
-                                        t.style.height = `${t.scrollHeight}px`;
-                                    }}
-                                />
-                                <InputError message={errors.details} />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <form
+                                onSubmit={handleSubmit}
+                                encType="multipart/form-data"
+                                className="space-y-4"
+                            >
                                 <div>
-                                    <Label htmlFor="start_date">Start Date</Label>
-                                    <Input
-                                        id="start_date"
-                                        type="datetime-local"
-                                        value={data.start_date}
-                                        onChange={e => setData('start_date', e.target.value)}
+                                    <Label htmlFor="project_id">Project</Label>
+                                    <CustomSelect<ProjectOption>
+                                        id="project_id"
+                                        options={projectOptions}
+                                        value={projectOptions.find(opt => opt.value === data.project_id) ?? null}
+                                        onChange={(newValue) => {
+                                            setData('project_id', (newValue as SingleValue<ProjectOption>)?.value ?? '');
+                                        }}
                                     />
-                                    <InputError message={errors.start_date} />
+
+                                    <InputError message={errors.project_id} />
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="end_date">End Date</Label>
+                                    <Label htmlFor="title">Title</Label>
                                     <Input
-                                        id="end_date"
-                                        type="datetime-local"
-                                        value={data.end_date}
-                                        onChange={e => setData('end_date', e.target.value)}
+                                        id="title"
+                                        type="text"
+                                        value={data.title}
+                                        onChange={e => setData('title', e.target.value)}
+                                        required
                                     />
-                                    <InputError message={errors.end_date} />
+                                    <InputError message={errors.title} />
                                 </div>
-                            </div>
 
-                            <div>
-                                <Label htmlFor="user_ids">Assigned Users</Label>
-                                <CustomSelect<UserOption>
-                                    id="user_ids"
-                                    isMulti
-                                    options={userOptions}
-                                    value={userOptions.filter(opt => data.user_ids.includes(opt.value))}
-                                    onChange={(newValue) => {
-                                        setData(
-                                            'user_ids',
-                                            (newValue as MultiValue<UserOption>).map(opt => opt.value)
-                                        );
-                                    }}
-                                />
+                                <div>
+                                    <Label htmlFor="details">Details</Label>
+                                    <Textarea
+                                        id="details"
+                                        value={data.details}
+                                        onChange={e => setData('details', e.target.value)}
+                                        className="w-full p-2 border rounded-md"
+                                        rows={3}
+                                        onInput={e => {
+                                            const t = e.target as HTMLTextAreaElement;
+                                            t.style.height = 'auto';
+                                            t.style.height = `${t.scrollHeight}px`;
+                                        }}
+                                    />
+                                    <InputError message={errors.details} />
+                                </div>
 
-                                <InputError message={errors.user_ids} />
-                            </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <Label htmlFor="start_date">Start Date</Label>
+                                        <Input
+                                            id="start_date"
+                                            type="datetime-local"
+                                            value={data.start_date}
+                                            onChange={e => setData('start_date', e.target.value)}
+                                        />
+                                        <InputError message={errors.start_date} />
+                                    </div>
 
-                            <div className="flex items-center">
-                                <Checkbox
-                                    id="done"
-                                    checked={data.done}
-                                    onChange={e =>
-                                        setData('done', (e.target as HTMLInputElement).checked)
-                                    }
-                                />
-                                <Label htmlFor="done" className="ml-2">
-                                    Done
-                                </Label>
-                            </div>
+                                    <div>
+                                        <Label htmlFor="end_date">End Date</Label>
+                                        <Input
+                                            id="end_date"
+                                            type="datetime-local"
+                                            value={data.end_date}
+                                            onChange={e => setData('end_date', e.target.value)}
+                                        />
+                                        <InputError message={errors.end_date} />
+                                    </div>
+                                </div>
 
-                            <div className="flex items-center space-x-4">
-                                <Button disabled={processing}>
-                                    {isEdit ? 'Update Task' : 'Create Task'}
-                                </Button>
-                                <Link
-                                    href={route('tasks.index')}
-                                    className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted/70"
-                                >
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
+                                <div>
+                                    <Label htmlFor="user_ids">Assigned Users</Label>
+                                    <CustomSelect<UserOption>
+                                        id="user_ids"
+                                        isMulti
+                                        options={userOptions}
+                                        value={userOptions.filter(opt => data.user_ids.includes(opt.value))}
+                                        onChange={(newValue) => {
+                                            setData(
+                                                'user_ids',
+                                                (newValue as MultiValue<UserOption>).map(opt => opt.value)
+                                            );
+                                        }}
+                                    />
 
-                        {isEdit && (activities ?? []).length > 0 && (
-                            <div className="mt-8">
-                                <h2 className="text-lg font-semibold mb-2">Audit Trail</h2>
-                                <table className="table-auto w-full border-collapse border border-gray-300">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Time</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">User</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Event</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Changes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {(activities ?? []).map((a, i) => (
-                                            <tr key={i} className="hover:bg-gray-50">
-                                                <td className="border border-gray-300 px-4 py-2">{a.time}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{a.user}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{a.event}</td>
-                                                <td className="border border-gray-300 px-4 py-2">
-                                                    {Object.keys(a.changes).length > 0 ? (
-                                                        <ul className="list-disc ml-4">
-                                                            {Object.entries(a.changes).map(([key, value]) => (
-                                                                <li key={key}>
-                                                                    <strong>{key}</strong>: "
-                                                                    {typeof a.old?.[key] === 'object' ? JSON.stringify(a.old[key]) : a.old?.[key]}" → "
-                                                                    {typeof value === 'object' ? JSON.stringify(value) : value}"
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    ) : (
-                                                        'No changes'
-                                                    )}
-                                                </td>
+                                    <InputError message={errors.user_ids} />
+                                </div>
+
+                                <div className="flex items-center">
+                                    <Checkbox
+                                        id="done"
+                                        checked={data.done}
+                                        onChange={e =>
+                                            setData('done', (e.target as HTMLInputElement).checked)
+                                        }
+                                    />
+                                    <Label htmlFor="done" className="ml-2">
+                                        Done
+                                    </Label>
+                                </div>
+
+                                <div className="flex items-center space-x-4">
+                                    <Button disabled={processing}>
+                                        {isEdit ? 'Update Task' : 'Create Task'}
+                                    </Button>
+                                    <Link
+                                        href={route('tasks.index')}
+                                        className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted/70"
+                                    >
+                                        Cancel
+                                    </Link>
+                                </div>
+                            </form>
+
+                            {isEdit && (activities ?? []).length > 0 && (
+                                <div className="mt-8">
+                                    <h2 className="text-lg font-semibold mb-2">Audit Trail</h2>
+                                    <table className="table-auto w-full border-collapse border border-gray-300">
+                                        <thead>
+                                            <tr className="bg-gray-100">
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Time</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">User</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Event</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Changes</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                                        </thead>
+                                        <tbody>
+                                            {(activities ?? []).map((a, i) => (
+                                                <tr key={i} className="hover:bg-gray-50">
+                                                    <td className="border border-gray-300 px-4 py-2">{a.time}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{a.user}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{a.event}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">
+                                                        {Object.keys(a.changes).length > 0 ? (
+                                                            <ul className="list-disc ml-4">
+                                                                {Object.entries(a.changes).map(([key, value]) => (
+                                                                    <li key={key}>
+                                                                        <strong>{key}</strong>: "
+                                                                        {typeof a.old?.[key] === 'object' ? JSON.stringify(a.old[key]) : a.old?.[key]}" → "
+                                                                        {typeof value === 'object' ? JSON.stringify(value) : value}"
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            'No changes'
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ProjectsLayout>
         </AppLayout>
     );
 }

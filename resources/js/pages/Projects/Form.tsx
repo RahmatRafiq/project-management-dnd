@@ -11,6 +11,7 @@ import { BreadcrumbItem } from '@/types';
 import { Project } from '@/types/Projects';
 import { Textarea } from '@headlessui/react';
 import Dropzoner from '@/components/dropzoner';
+import ProjectsLayout from '@/layouts/project/layout';
 
 interface FileData {
     file_name: string;
@@ -97,137 +98,139 @@ export default function ProjectForm({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={isEdit ? 'Edit Project' : 'Create Project'} />
-            <div className="px-4 py-6">
-                <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
-                <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-                    <div className="flex-1 md:max-w-2xl space-y-6">
-                        <HeadingSmall
-                            title={isEdit ? 'Edit Project' : 'Create Project'}
-                            description="Fill in the details below"
-                        />
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {isEdit && (
+            <ProjectsLayout>
+                <div className="px-4 py-6">
+                    <h1 className="text-2xl font-semibold mb-4">Project Management</h1>
+                    <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+                        <div className="w-full space-y-6">
+                            <HeadingSmall
+                                title={isEdit ? 'Edit Project' : 'Create Project'}
+                                description="Fill in the details below"
+                            />
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                {isEdit && (
+                                    <div>
+                                        <Label htmlFor="reference">Reference</Label>
+                                        <Input
+                                            id="reference"
+                                            type="text"
+                                            value={data.reference}
+                                            onChange={e => setData('reference', e.target.value)}
+                                            required
+                                            readOnly
+                                        />
+                                        <InputError message={errors.reference} />
+                                    </div>
+                                )}
+
                                 <div>
-                                    <Label htmlFor="reference">Reference</Label>
+                                    <Label htmlFor="name">Project Name</Label>
                                     <Input
-                                        id="reference"
+                                        id="name"
                                         type="text"
-                                        value={data.reference}
-                                        onChange={e => setData('reference', e.target.value)}
+                                        value={data.name}
+                                        onChange={e => setData('name', e.target.value)}
                                         required
-                                        readOnly
                                     />
-                                    <InputError message={errors.reference} />
+                                    <InputError message={errors.name} />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="description">Description</Label>
+                                    <Textarea
+                                        id="description"
+                                        value={data.description ?? ''}
+                                        onChange={e => setData('description', e.target.value)}
+                                        className="w-full p-2 border rounded-md"
+                                        rows={3}
+                                        onInput={e => {
+                                            const t = e.target as HTMLTextAreaElement;
+                                            t.style.height = 'auto';
+                                            t.style.height = `${t.scrollHeight}px`;
+                                        }}
+                                    />
+                                    <InputError message={errors.description} />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="metadata">Metadata (comma-separated)</Label>
+                                    <Input
+                                        id="metadata"
+                                        type="text"
+                                        value={Array.isArray(data.metadata) ? data.metadata.join(', ') : ''}
+                                        onChange={e => setData('metadata', e.target.value.split(',').map(i => i.trim()))}
+                                    />
+                                    <InputError message={errors.metadata} />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="documents">Documents</Label>
+                                    <div ref={dropzoneRef} className="dropzone border-dashed border-2 rounded p-4" />
+                                    <InputError message={errors.documents} />
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="is_active">Is Active</Label>
+                                    <Checkbox
+                                        id="is_active"
+                                        checked={data.is_active}
+                                        onChange={e => setData('is_active', (e.target as HTMLInputElement).checked)}
+                                    />
+                                </div>
+
+                                <div className="flex items-center space-x-4">
+                                    <Button disabled={processing}>
+                                        {isEdit ? 'Update Project' : 'Create Project'}
+                                    </Button>
+                                    <Link href={route('projects.index')} className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted/70">
+                                        Cancel
+                                    </Link>
+                                </div>
+                            </form>
+                            {isEdit && activities.length > 0 && (
+                                <div className="mt-8">
+                                    <h2 className="text-lg font-semibold mb-2">Audit Trail</h2>
+                                    <table className="table-auto w-full border-collapse border border-gray-300">
+                                        <thead>
+                                            <tr className="bg-gray-100">
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Time</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">User</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Event</th>
+                                                <th className="border border-gray-300 px-4 py-2 text-left">Changes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {activities.map((a, i) => (
+                                                <tr key={i} className="hover:bg-gray-50">
+                                                    <td className="border border-gray-300 px-4 py-2">{a.time}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{a.user}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">{a.event}</td>
+                                                    <td className="border border-gray-300 px-4 py-2">
+                                                        {Object.keys(a.changes).length > 0 ? (
+                                                            <ul className="list-disc ml-4">
+                                                                {Object.entries(a.changes).map(([key, value]) => (
+                                                                    <li key={key}>
+                                                                        <strong>{key}</strong>: "
+                                                                        {typeof a.old?.[key] === 'object' ? JSON.stringify(a.old[key]) : a.old?.[key]}" → "
+                                                                        {typeof value === 'object' ? JSON.stringify(value) : value}"
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        ) : (
+                                                            'No changes'
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 </div>
                             )}
 
-                            <div>
-                                <Label htmlFor="name">Project Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    value={data.name}
-                                    onChange={e => setData('name', e.target.value)}
-                                    required
-                                />
-                                <InputError message={errors.name} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    value={data.description ?? ''}
-                                    onChange={e => setData('description', e.target.value)}
-                                    className="w-full p-2 border rounded-md"
-                                    rows={3}
-                                    onInput={e => {
-                                        const t = e.target as HTMLTextAreaElement;
-                                        t.style.height = 'auto';
-                                        t.style.height = `${t.scrollHeight}px`;
-                                    }}
-                                />
-                                <InputError message={errors.description} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="metadata">Metadata (comma-separated)</Label>
-                                <Input
-                                    id="metadata"
-                                    type="text"
-                                    value={Array.isArray(data.metadata) ? data.metadata.join(', ') : ''}
-                                    onChange={e => setData('metadata', e.target.value.split(',').map(i => i.trim()))}
-                                />
-                                <InputError message={errors.metadata} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="documents">Documents</Label>
-                                <div ref={dropzoneRef} className="dropzone border-dashed border-2 rounded p-4" />
-                                <InputError message={errors.documents} />
-                            </div>
-
-                            <div>
-                                <Label htmlFor="is_active">Is Active</Label>
-                                <Checkbox
-                                    id="is_active"
-                                    checked={data.is_active}
-                                    onChange={e => setData('is_active', (e.target as HTMLInputElement).checked)}
-                                />
-                            </div>
-
-                            <div className="flex items-center space-x-4">
-                                <Button disabled={processing}>
-                                    {isEdit ? 'Update Project' : 'Create Project'}
-                                </Button>
-                                <Link href={route('projects.index')} className="px-4 py-2 bg-muted text-foreground rounded hover:bg-muted/70">
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
-                        {isEdit && activities.length > 0 && (
-                            <div className="mt-8">
-                                <h2 className="text-lg font-semibold mb-2">Audit Trail</h2>
-                                <table className="table-auto w-full border-collapse border border-gray-300">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Time</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">User</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Event</th>
-                                            <th className="border border-gray-300 px-4 py-2 text-left">Changes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {activities.map((a, i) => (
-                                            <tr key={i} className="hover:bg-gray-50">
-                                                <td className="border border-gray-300 px-4 py-2">{a.time}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{a.user}</td>
-                                                <td className="border border-gray-300 px-4 py-2">{a.event}</td>
-                                                <td className="border border-gray-300 px-4 py-2">
-                                                    {Object.keys(a.changes).length > 0 ? (
-                                                        <ul className="list-disc ml-4">
-                                                            {Object.entries(a.changes).map(([key, value]) => (
-                                                                <li key={key}>
-                                                                    <strong>{key}</strong>: "
-                                                                    {typeof a.old?.[key] === 'object' ? JSON.stringify(a.old[key]) : a.old?.[key]}" → "
-                                                                    {typeof value === 'object' ? JSON.stringify(value) : value}"
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    ) : (
-                                                        'No changes'
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
-
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ProjectsLayout>
         </AppLayout>
     );
 }

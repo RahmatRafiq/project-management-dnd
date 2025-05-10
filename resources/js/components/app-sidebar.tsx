@@ -42,13 +42,8 @@ const mainNavItems: NavItem[] = [
         ],
     },
     {
-        title: 'Projects',
+        title: 'Projects and Tasks',
         href: '/projects',
-        icon: Folder,
-    },
-    {
-        title: 'Tasks',
-        href: '/tasks',
         icon: Folder,
     },
 

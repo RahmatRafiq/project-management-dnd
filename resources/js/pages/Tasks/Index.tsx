@@ -9,6 +9,7 @@ import DataTableWrapper, { DataTableWrapperRef } from '@/components/datatables';
 import { BreadcrumbItem } from '@/types';
 import { Task } from '@/types/Tasks';
 import ToggleTabs from '@/components/toggle-tabs';
+import ProjectsLayout from '@/layouts/project/layout';
 
 const columns = (filter: string) => [
     { data: 'reference', title: 'Reference' },
@@ -106,31 +107,33 @@ export default function TaskIndex({ filter: initialFilter, success }: { filter: 
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tasks" />
-            <div className="px-4 py-6">
-                <HeadingSmall title="Tasks" description="Manage tasks" />
-                <div className="flex items-center justify-between mb-4">
-                    <ToggleTabs tabs={['active', 'trashed', 'all']} active={filter} onChange={setFilter} />
-                    <Link href={route('tasks.create')}>
-                        <Button>Create Task</Button>
-                    </Link>
+            <ProjectsLayout>
+                <Head title="Tasks" />
+                <div className="px-4 py-6">
+                    <HeadingSmall title="Tasks" description="Manage tasks" />
+                    <div className="flex items-center justify-between mb-4">
+                        <ToggleTabs tabs={['active', 'trashed', 'all']} active={filter} onChange={setFilter} />
+                        <Link href={route('tasks.create')}>
+                            <Button>Create Task</Button>
+                        </Link>
+                    </div>
+
+                    {success && (
+                        <div className="p-2 mb-2 bg-green-100 text-green-800 rounded">{success}</div>
+                    )}
+
+                    <DataTableWrapper
+                        key={filter}
+                        ref={dtRef}
+                        ajax={{
+                            url: route('tasks.json') + '?filter=' + filter,
+                            type: 'POST',
+                        }}
+                        columns={columns(filter)}
+                        options={{ drawCallback }}
+                    />
                 </div>
-
-                {success && (
-                    <div className="p-2 mb-2 bg-green-100 text-green-800 rounded">{success}</div>
-                )}
-
-                <DataTableWrapper
-                    key={filter}
-                    ref={dtRef}
-                    ajax={{
-                        url: route('tasks.json') + '?filter=' + filter,
-                        type: 'POST',
-                    }}
-                    columns={columns(filter)}
-                    options={{ drawCallback }}
-                />
-            </div>
+            </ProjectsLayout>
         </AppLayout>
     );
 }
