@@ -61,7 +61,29 @@ export default function ActivityLogList() {
         { data: 'created_at', title: 'Waktu' },
         { data: 'causer_name', title: 'User' },
         { data: 'description', title: 'Deskripsi' },
-        { data: 'event', title: 'Event' },
+        {
+          data: 'event',
+          title: 'Event',
+          render: (data: null) => {
+            const evt = String(data); 
+            const base = 'px-2 inline-flex text-xs font-semibold rounded-full';
+            let classes = '';
+            switch (evt) {
+              case 'created':
+                classes = 'bg-green-100 text-green-800';
+                break;
+              case 'updated':
+                classes = 'bg-yellow-100 text-yellow-800';
+                break;
+              case 'deleted':
+                classes = 'bg-red-100 text-red-800';
+                break;
+              default:
+                classes = 'bg-gray-100 text-gray-800';
+            }
+            return `<span class="${base} ${classes}">${evt}</span>`;
+          }
+        },
       ],
       options: {
         serverSide: true,
@@ -76,18 +98,15 @@ export default function ActivityLogList() {
   return (
     <AppLayout breadcrumbs={[{ title: 'Activity Logs', href: '/dashboard/activity-logs' }]}>
       <Head title="Activity Logs by Model" />
-
       <div className="px-4 py-6 space-y-8">
         <section>
           <h2 className="text-xl font-semibold mb-3">User Activity</h2>
           <DataTableWrapper ref={userRef} {...buildConfig('User')} />
         </section>
-
         <section>
           <h2 className="text-xl font-semibold mb-3">Project Activity</h2>
           <DataTableWrapper ref={projectRef} {...buildConfig('Project')} />
         </section>
-
         <section>
           <h2 className="text-xl font-semibold mb-3">Task Activity</h2>
           <DataTableWrapper ref={taskRef} {...buildConfig('Task')} />
