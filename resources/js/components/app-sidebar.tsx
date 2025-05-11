@@ -1,5 +1,3 @@
-// resources/js/Layouts/AppSidebar.tsx
-
 import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import {

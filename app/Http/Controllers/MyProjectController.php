@@ -59,7 +59,7 @@ class MyProjectController extends Controller
             'body'    => $data['body'],
         ]);
 
-        $comment = $task->comments()->with('user')->latest()->first();
+        $task->comments()->with('user')->latest()->first();
 
         return redirect()->back()->with('success', 'Comment added successfully.');
     }
