@@ -1,75 +1,68 @@
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+// resources/js/Layouts/AppSidebar.tsx
+
+import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
-import AppLogo from './app-logo';
-import { Users, Shield, Settings } from 'lucide-react';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Log Activity',
-        href: '/activity-logs',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Users Management',
-        href: '',
-        icon: Users,
-        children: [
-            {
-                title: 'Roles',
-                href: '/roles',
-                icon: Shield,
-            },
-            {
-                title: 'Permissions',
-                href: '/permissions',
-                icon: Shield,
-            },
-            {
-                title: 'User',
-                href: '/users',
-                icon: Settings,
-            },
-        ],
-    },
-    {
-        title: 'Projects and Tasks',
-        href: '/projects',
-        icon: Folder,
-    },
-
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits',
-        icon: BookOpen,
-    },
-];
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import { NavMain } from '@/components/nav-main';
+import { NavFooter } from '@/components/nav-footer';
+import { NavUser } from '@/components/nav-user';
+import AppLogo from '@/components/app-logo';
+import { LayoutGrid, Users, Shield, Settings, Folder, BookOpen } from 'lucide-react';
+import { type NavItem } from '@/types';
 
 export function AppSidebar() {
+    const { auth } = usePage<{
+        auth: { user: { roles: { name: string }[] } };
+    }>().props;
+
+    const roleNames = auth.user.roles ? auth.user.roles.map((r) => r.name) : [];
+console.log(auth.user.roles);
+    const mainNavItems: NavItem[] = [
+        { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
+        { title: 'Log Activity', href: '/activity-logs', icon: LayoutGrid },
+        {
+            title: 'Users Management',
+            href: '',
+            icon: Users,
+            children: [
+                { title: 'Roles', href: '/roles', icon: Shield },
+                { title: 'Permissions', href: '/permissions', icon: Shield },
+                ...(roleNames.includes('administrator')
+                    ? [{ title: 'User', href: '/users', icon: Settings }]
+                    : []),
+            ],
+        },
+        { title: 'Projects and Tasks', href: '/projects', icon: Folder },
+    ];
+
+    const footerNavItems: NavItem[] = [
+        {
+            title: 'Repository',
+            href: 'https://github.com/laravel/react-starter-kit',
+            icon: Folder,
+        },
+        {
+            title: 'Documentation',
+            href: 'https://laravel.com/docs/starter-kits',
+            icon: BookOpen,
+        },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard" prefetch>
+                            <Link href="/dashboard">
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

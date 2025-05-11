@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\UserRolePermission\PermissionController;
+use App\Http\Controllers\UserRolePermission\RoleController;
+use App\Http\Controllers\UserRolePermission\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -9,11 +12,9 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-// Route for login with OAuth (Google, GitHub)
 Route::get('auth/{provider}', [SocialAuthController::class, 'redirectToProvider'])->name('auth.redirect');
 Route::get('auth/{provider}/callback', [SocialAuthController::class, 'handleProviderCallback'])->name('auth.callback');
 
-// Middleware for pages that require authentication
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
@@ -25,45 +26,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/temp/storage', [\App\Http\Controllers\StorageController::class, 'destroy'])->name('storage.destroy');
     Route::get('/temp/storage/{path}', [\App\Http\Controllers\StorageController::class, 'show'])->name('storage.show');
 
-    Route::post('roles/json', [\App\Http\Controllers\UserRolePermission\RoleController::class, 'json'])->name('roles.json');
-    Route::resource('roles', \App\Http\Controllers\UserRolePermission\RoleController::class);
+    Route::post('roles/json', [RoleController::class, 'json'])->name('roles.json');
+    Route::resource('roles', RoleController::class);
+    Route::post('permissions/json', [PermissionController::class, 'json'])->name('permissions.json');
+    Route::resource('permissions', PermissionController::class);
 
-    Route::post('permissions/json', [\App\Http\Controllers\UserRolePermission\PermissionController::class, 'json'])->name('permissions.json');
-    Route::resource('permissions', \App\Http\Controllers\UserRolePermission\PermissionController::class);
-
-    Route::post('users/json', [\App\Http\Controllers\UserRolePermission\UserController::class, 'json'])->name('users.json');
-    Route::resource('users', \App\Http\Controllers\UserRolePermission\UserController::class);
-    Route::get('users/trashed', [\App\Http\Controllers\UserRolePermission\UserController::class, 'trashed'])->name('users.trashed');
-    Route::post('users/{user}/restore', [\App\Http\Controllers\UserRolePermission\UserController::class, 'restore'])->name('users.restore');
-    Route::delete('users/{user}/force-delete', [\App\Http\Controllers\UserRolePermission\UserController::class, 'forceDelete'])->name('users.force-delete');
+    Route::middleware('role:administrator')->group(function () {
+        Route::post('users/json', [UserController::class, 'json'])->name('users.json');
+        Route::resource('users', UserController::class);
+        Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
+        Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+        Route::delete('users/{user}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
+    });
 
     Route::post('projects/json', [\App\Http\Controllers\ProjectController::class, 'json'])->name('projects.json');
     Route::resource('projects', \App\Http\Controllers\ProjectController::class);
     Route::get('projects/trashed', [\App\Http\Controllers\ProjectController::class, 'trashed'])->name('projects.trashed');
     Route::post('projects/{project}/restore', [\App\Http\Controllers\ProjectController::class, 'restore'])->name('projects.restore');
     Route::delete('projects/{project}/force-delete', [\App\Http\Controllers\ProjectController::class, 'forceDelete'])->name('projects.force-delete');
+    Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
+    Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
 
     Route::post('tasks/json', [\App\Http\Controllers\TaskController::class, 'json'])->name('tasks.json');
     Route::resource('tasks', \App\Http\Controllers\TaskController::class);
     Route::get('tasks/trashed', [\App\Http\Controllers\TaskController::class, 'trashed'])->name('tasks.trashed');
     Route::post('tasks/{task}/restore', [\App\Http\Controllers\TaskController::class, 'restore'])->name('tasks.restore');
     Route::delete('tasks/{task}/force-delete', [\App\Http\Controllers\TaskController::class, 'forceDelete'])->name('tasks.force-delete');
-    Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
-    Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
 
     Route::post('activity-logs/json', [ActivityLogController::class, 'jsonBySubject'])->name('activity-logs.json');
 
     Route::post('logout', [SocialAuthController::class, 'logout'])->name('logout');
 });
+
 Route::get('/dashboard/activity-logs', function () {
     return Inertia::render('ActivityLogList');
 })->middleware(['auth']);
 
 Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-log.index');
+
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
-
-// "datatables.net": "^2.2.2",
-// "datatables.net-dt": "^2.2.2",
-// "datatables.net-react": "^1.0.0",
-// "jquery": "^3.7.1",
