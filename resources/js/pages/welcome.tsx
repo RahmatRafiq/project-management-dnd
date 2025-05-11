@@ -3,6 +3,7 @@ import { usePage } from '@inertiajs/react';
 import { Dialog } from '@radix-ui/react-dialog';
 import * as Toast from '@radix-ui/react-toast';
 import { useState } from 'react';
+import { FaRocket, FaLightbulb, FaChartLine } from 'react-icons/fa';
 
 export default function Welcome() {
     usePage<SharedData>();
@@ -48,26 +49,34 @@ export default function Welcome() {
                                 title: 'Innovative Solutions',
                                 description:
                                     'We deliver creative and effective solutions to complex problems.',
-                                icon: '🚀',
+                                icon: <FaRocket />,
+                                image: 'https://placehold.co/400',
                             },
                             {
                                 title: 'Customer Focused',
                                 description:
                                     'Our team is dedicated to providing the best customer experience.',
-                                icon: '💡',
+                                icon: <FaLightbulb />,
+                                image: 'https://placehold.co/400',
                             },
                             {
                                 title: 'Proven Results',
                                 description:
                                     'We ensure measurable and impactful outcomes for your business.',
-                                icon: '📈',
+                                icon: <FaChartLine />,
+                                image: 'https://placehold.co/400',
                             },
                         ].map((feature, index) => (
                             <div
                                 key={index}
                                 className="p-8 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow"
                             >
-                                <div className="text-5xl">{feature.icon}</div>
+                                <img
+                                    src={feature.image}
+                                    alt={feature.title}
+                                    className="w-full h-32 object-cover rounded-lg mb-6"
+                                />
+                                <div className="text-5xl text-blue-500">{feature.icon}</div>
                                 <h3 className="mt-6 text-2xl font-semibold">{feature.title}</h3>
                                 <p className="mt-4 text-gray-600">{feature.description}</p>
                             </div>
