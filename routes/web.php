@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('permissions/json', [PermissionController::class, 'json'])->name('permissions.json');
     Route::resource('permissions', PermissionController::class);
 
-    Route::middleware('role:Administrator')->group(function () {
+    Route::middleware('role:administrator')->group(function () {
         Route::post('users/json', [UserController::class, 'json'])->name('users.json');
         Route::resource('users', UserController::class);
         Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
