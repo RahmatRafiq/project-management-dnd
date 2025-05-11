@@ -55,6 +55,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('activity-logs/json', [ActivityLogController::class, 'jsonBySubject'])->name('activity-logs.json');
 
+    Route::get('/my-projects', [\App\Http\Controllers\MyProjectController::class, 'index'])->name('my-projects.index');
+    Route::post('/tasks/{task}/comments', [\App\Http\Controllers\MyProjectController::class, 'storeComment'])->name('tasks.comments.store');
+    Route::get('/my-projects/{project}', [\App\Http\Controllers\MyProjectController::class, 'show'])->name('my-projects.show');
+    Route::patch('/tasks/{task}/toggle-done', [\App\Http\Controllers\MyProjectController::class, 'toggleDone'])->name('tasks.toggle-done');
+
     Route::post('logout', [SocialAuthController::class, 'logout'])->name('logout');
 });
 
