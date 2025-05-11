@@ -24,7 +24,7 @@ export function AppSidebar() {
     }>().props;
 
     const roleNames = auth.user.roles ? auth.user.roles.map((r) => r.name) : [];
-
+console.log(auth.user.roles);
     const mainNavItems: NavItem[] = [
         { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
         { title: 'Log Activity', href: '/activity-logs', icon: LayoutGrid },
@@ -35,7 +35,7 @@ export function AppSidebar() {
             children: [
                 { title: 'Roles', href: '/roles', icon: Shield },
                 { title: 'Permissions', href: '/permissions', icon: Shield },
-                ...(roleNames.includes('Administrator')
+                ...(roleNames.includes('administrator')
                     ? [{ title: 'User', href: '/users', icon: Settings }]
                     : []),
             ],
