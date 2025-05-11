@@ -74,6 +74,7 @@ export default function ProjectForm({
             files: initialFiles,
             kind: 'file',
             maxFilesize: 0.5,
+            minFilesize: 100,
         });
 
         dzInstance.current.on('sending', (_, __, formData) => {

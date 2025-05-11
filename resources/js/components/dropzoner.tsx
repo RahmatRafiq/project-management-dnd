@@ -19,13 +19,24 @@ interface DropzoneOptions {
   files?: FileData[];
   maxFiles: number;
   kind: string;
-  maxFilesize: number;
+  maxFilesize: number;   // in MB
+  minFilesize?: number;  // in KB (optional)
 }
 
 const Dropzoner = (
   element: HTMLElement | null,
   key: string,
-  { urlStore, urlDestroy, csrf, acceptedFiles, files, maxFiles, kind, maxFilesize }: DropzoneOptions
+  {
+    urlStore,
+    urlDestroy,
+    csrf,
+    acceptedFiles,
+    files,
+    maxFiles,
+    kind,
+    maxFilesize,
+    minFilesize = 0, // default 0 KB if not provided
+  }: DropzoneOptions
 ): Dropzone => {
   if (!element) throw new Error('Element not found');
   if (!urlStore) throw new Error('URL Store not found');
@@ -40,10 +51,11 @@ const Dropzoner = (
   const myDropzone = new Dropzone(element, {
     url: urlStore,
     headers: { 'X-CSRF-TOKEN': csrf },
-    acceptedFiles: acceptedFiles,
-    maxFiles: maxFiles,
-    maxFilesize: maxFilesize, 
+    acceptedFiles,
+    maxFiles,
+    maxFilesize, // in MB
     addRemoveLinks: true,
+
     init: function () {
       if (files) {
         files.forEach(file => {
@@ -70,7 +82,24 @@ const Dropzoner = (
           mockFile.previewElement?.appendChild(input);
         });
       }
+
+      // Custom size validation
+      this.on('addedfile', (file: Dropzone.DropzoneFile) => {
+        const minBytes = minFilesize * 1024; // convert KB to bytes
+        const maxBytes = maxFilesize * 1024 * 1024; // convert MB to bytes
+
+        if (file.size < minBytes || file.size > maxBytes) {
+          const message =
+            file.size < minBytes
+              ? `File terlalu kecil. Minimal ${minFilesize}KB.`
+              : `File terlalu besar. Maksimal ${maxFilesize}MB.`;
+
+          this.removeFile(file);
+          Toastify({ text: message, className: 'error', duration: 5000 }).showToast();
+        }
+      });
     },
+
     success: function (file: Dropzone.DropzoneFile) {
       const response = file.xhr ? JSON.parse(file.xhr.responseText) : {};
       if (response && file.upload) {
@@ -80,6 +109,7 @@ const Dropzoner = (
       }
       console.log('Upload successful');
     },
+
     removedfile: function (file) {
       fetch(urlDestroy, {
         method: 'POST',
@@ -99,25 +129,20 @@ const Dropzoner = (
             console.error('Failed to parse JSON:', text);
           }
         })
-
         .then(data => console.log(data))
         .catch(error => console.error(error));
 
       file.previewElement?.parentNode?.removeChild(file.previewElement);
     },
+
     error: function (file, message: string | Error) {
       const errorMessage = message instanceof Error ? message.message : message;
-      Toastify({
-        text: errorMessage,
-        className: 'error',
-        duration: 5000
-      }).showToast();
+      Toastify({ text: errorMessage, className: 'error', duration: 5000 }).showToast();
       file.previewElement?.parentNode?.removeChild(file.previewElement);
     },
   });
 
   return myDropzone;
 };
-
 
 export default Dropzoner;
