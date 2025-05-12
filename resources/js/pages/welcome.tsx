@@ -2,6 +2,7 @@ import { Dialog } from '@radix-ui/react-dialog';
 import * as Toast from '@radix-ui/react-toast';
 import { useState } from 'react';
 import { FaTasks, FaUsers, FaChartBar } from 'react-icons/fa';
+import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 
 export default function Welcome() {
     const [openModal, setOpenModal] = useState(false);
@@ -12,17 +13,54 @@ export default function Welcome() {
     return (
         <div className="font-sans text-gray-900 bg-gray-50">
             {/* Navbar */}
+            import * as NavigationMenu from '@radix-ui/react-navigation-menu';
+
             <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
                 <div className="container mx-auto flex justify-between items-center py-4 px-6">
                     <h1 className="text-2xl font-bold text-blue-600">NotionFlow</h1>
-                    <nav className="space-x-6">
-                        <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">Features</a>
-                        <a href="#workflow" className="text-gray-700 hover:text-blue-600 transition-colors">Workflow</a>
-                        <a href="#templates" className="text-gray-700 hover:text-blue-600 transition-colors">Templates</a>
-                        <a href="#cta" className="text-gray-700 hover:text-blue-600 transition-colors">Get Started</a>
-                    </nav>
+
+                    <NavigationMenu.Root className="relative z-50">
+                        <NavigationMenu.List className="flex space-x-6 text-gray-700">
+                            <NavigationMenu.Item>
+                                <NavigationMenu.Link
+                                    href="#features"
+                                    className="hover:text-blue-600 transition-colors text-sm font-medium"
+                                >
+                                    Features
+                                </NavigationMenu.Link>
+                            </NavigationMenu.Item>
+
+                            <NavigationMenu.Item>
+                                <NavigationMenu.Link
+                                    href="#workflow"
+                                    className="hover:text-blue-600 transition-colors text-sm font-medium"
+                                >
+                                    Workflow
+                                </NavigationMenu.Link>
+                            </NavigationMenu.Item>
+
+                            <NavigationMenu.Item>
+                                <NavigationMenu.Link
+                                    href="#templates"
+                                    className="hover:text-blue-600 transition-colors text-sm font-medium"
+                                >
+                                    Templates
+                                </NavigationMenu.Link>
+                            </NavigationMenu.Item>
+
+                            <NavigationMenu.Item>
+                                <NavigationMenu.Link
+                                    href="#cta"
+                                    className="hover:text-blue-600 transition-colors text-sm font-medium"
+                                >
+                                    Get Started
+                                </NavigationMenu.Link>
+                            </NavigationMenu.Item>
+                        </NavigationMenu.List>
+                    </NavigationMenu.Root>
                 </div>
             </header>
+
 
             {/* Hero Section */}
             <section className="relative bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 text-white py-32">
@@ -89,31 +127,54 @@ export default function Welcome() {
                 </div>
             </section>
 
-            {/* Workflow Section */}
-            <section id="workflow" className="py-20 bg-gradient-to-br from-blue-500 to-indigo-600 text-white">
-                <div className="container mx-auto text-center">
-                    <h2 className="text-5xl font-bold">Your Workflow, Your Way</h2>
-                    <p className="mt-4 text-lg">
-                        All your projects, tasks, and notes in one place.
+            <section
+                id="workflow"
+                className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-gray-100"
+            >
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
+                        Your Workflow, Your Way
+                    </h2>
+                    <p className="mt-4 text-lg max-w-2xl mx-auto">
+                        All your projects, tasks, and notes in one place – beautifully organized.
                     </p>
-                    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                        <div className="p-8 bg-white text-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                            <h3 className="text-2xl font-bold">Customizable Views</h3>
-                            <p className="mt-4">Tailor your workspace to fit your needs.</p>
-                        </div>
-                        <div className="p-8 bg-white text-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                            <h3 className="text-2xl font-bold">Automation</h3>
-                            <p className="mt-4">Automate repetitive tasks and save time.</p>
-                        </div>
-                        <div className="p-8 bg-white text-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-                            <h3 className="text-2xl font-bold">Knowledge Management</h3>
-                            <p className="mt-4">Find everything you need instantly.</p>
-                        </div>
+
+                    <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[
+                            {
+                                title: "Typography",
+                                desc: "Typography is the art and technique of arranging type to make written language legible and appealing.",
+                                img: "https://images.unsplash.com/photo-1617050318658-a9a3175e34cb?auto=format&fit=crop&w=600&q=80",
+                            },
+                            {
+                                title: "Automation",
+                                desc: "Automation helps you save time by automating repetitive tasks with ease and elegance.",
+                                img: "https://images.unsplash.com/photo-1617050318658-a9a3175e34cb?auto=format&fit=crop&w=600&q=80",
+                            },
+                            {
+                                title: "Knowledge Management",
+                                desc: "Ensure all your resources are at your fingertips with smart knowledge management.",
+                                img: "https://images.unsplash.com/photo-1617050318658-a9a3175e34cb?auto=format&fit=crop&w=600&q=80",
+                            },
+                        ].map((item, i) => (
+                            <div
+                                key={i}
+                                className="bg-white rounded-2xl overflow-hidden shadow-xl transition-transform transform hover:scale-105 hover:shadow-2xl"
+                            >
+                                <img
+                                    src={item.img}
+                                    alt={item.title}
+                                    className="w-full h-40 object-cover"
+                                />
+                                <div className="p-6 text-left text-black">
+                                    <h3 className="text-xl font-semibold">{item.title}</h3>
+                                    <p className="mt-2 text-sm text-gray-700">{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
-
-            {/* Templates Section */}
             <section id="templates" className="py-20 bg-gray-100">
                 <div className="container mx-auto text-center">
                     <h2 className="text-5xl font-bold text-gray-800">Start with a Template</h2>
@@ -133,8 +194,6 @@ export default function Welcome() {
                     </div>
                 </div>
             </section>
-
-            {/* Call to Action Section */}
             <section id="cta" className="py-20 bg-gradient-to-r from-green-400 to-blue-500 text-white">
                 <div className="container mx-auto text-center">
                     <h2 className="text-5xl font-bold">Get Started Today</h2>
@@ -149,15 +208,11 @@ export default function Welcome() {
                     </button>
                 </div>
             </section>
-
-            {/* Footer Section */}
             <footer className="bg-gray-900 text-gray-400 py-10">
                 <div className="container mx-auto text-center">
                     <p>© 2025 NotionFlow. All Rights Reserved.</p>
                 </div>
             </footer>
-
-            {/* Modal Component */}
             {openModal && (
                 <Dialog open={openModal} onOpenChange={setOpenModal}>
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -178,8 +233,6 @@ export default function Welcome() {
                     </div>
                 </Dialog>
             )}
-
-            {/* Toast Notification */}
             <Toast.Provider>
                 <Toast.Root open={openToast} onOpenChange={setOpenToast}>
                     <Toast.Title className="font-bold text-lg">Welcome!</Toast.Title>
