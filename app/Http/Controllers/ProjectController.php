@@ -6,9 +6,9 @@ use App\Helpers\MediaLibrary;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Storage;
-use Spatie\Activitylog\Models\Activity;
 
 class ProjectController extends Controller
 {
@@ -53,12 +53,17 @@ class ProjectController extends Controller
         $data = DataTable::paginate($query, $request);
 
         $data['data'] = collect($data['data'])->map(function ($project) {
+            $documents = $project->getMedia('documents')->map(fn($m) => [
+                'file_name'    => $m->file_name,
+                'original_url' => $m->getFullUrl(),
+            ]);
             return [
                 'id'          => $project->id,
                 'reference'   => $project->reference,
                 'name'        => $project->name,
                 'description' => $project->description,
                 'is_active'   => $project->is_active,
+                'documents'   => $documents,
                 'trashed'     => $project->trashed(),
                 'actions'     => '',
             ];

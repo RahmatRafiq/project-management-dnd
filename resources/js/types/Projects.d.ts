@@ -11,7 +11,8 @@ export interface Project {
     trashed?: boolean;
     documents?: {
         file_name: string;
-        size: number; // Added size
-        url: string;  // Added url
-    }[]; // Updated documents field
+        size: number; 
+        url: string;  
+        original_url: string;
+    }[]; 
 }

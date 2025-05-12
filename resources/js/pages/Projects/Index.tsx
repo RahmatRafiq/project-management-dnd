@@ -33,6 +33,18 @@ const columns = (filter: string) => [
     render: (_: null, __: string, row: unknown) => {
       const project = row as Project;
       let html = '';
+      if (project.documents?.length) {
+        project.documents.forEach(doc => {
+          html += `
+            <button
+              class="btn-download ml-1 mb-1 px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+              data-url="${doc.original_url}"
+            >
+              Download
+            </button>
+          `;
+        });
+      }
       if (filter === 'trashed' || (filter === 'all' && project.trashed)) {
         html += `<button class="btn-restore ml-2 px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700" data-id="${project.id}">Restore</button>`;
         html += `<button class="btn-force-delete ml-2 px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700" data-id="${project.id}">Force Delete</button>`;
@@ -50,6 +62,13 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
   const dtRef = useRef<DataTableWrapperRef>(null);
   const [filter, setFilter] = useState(initialFilter || 'active');
 
+  document.querySelectorAll('.btn-download').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const url = btn.getAttribute('data-url');
+      if (url) window.open(url, '_blank');
+    })
+  );
+  
   const handleDelete = (id: string) => {
     router.delete(route('projects.destroy', id), {
       onSuccess: () => dtRef.current?.reload(),
