@@ -51,12 +51,14 @@ export default function KanbanBoard({ initialTasks, onToggleDone }: KanbanBoardP
         if (!comment) return
 
         try {
-            const response = await fetch(route('tasks.comment', { task: taskId }), {
+            const response = await fetch(route('tasks.comments.store', { task: taskId }), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement).content,
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
+
                 body: JSON.stringify({ body: comment }),
             })
 
