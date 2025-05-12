@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react'
+import React, { useState } from 'react'
 import { Head } from '@inertiajs/react'
 
 import AppLayout from '@/layouts/app-layout'
@@ -6,7 +6,7 @@ import HeadingSmall from '@/components/heading-small'
 
 import { ProjectWithTasks, TaskWithComments } from '@/types/Extended'
 import MyProjectsLayout from '@/layouts/project/myproject'
-import TaskCard from './TaskCard'
+import KanbanBoard from './KanbanBoard'
 
 type Props = {
     projects: ProjectWithTasks[]
@@ -15,49 +15,8 @@ type Props = {
 }
 
 export default function MyProjects({ projects, currentProjectId, tasks = [] }: Props) {
-    const [commentInputs, setCommentInputs] = useState<Record<string, string>>({})
-    const [error, setError] = useState<string | null>(null)
+
     const [taskList, setTaskList] = useState<TaskWithComments[]>(tasks)
-
-    const handleInputChange =
-        (taskId: string) => (e: ChangeEvent<HTMLTextAreaElement>) => {
-            setCommentInputs(prev => ({ ...prev, [taskId]: e.target.value }))
-        }
-
-    const handleSubmit = (taskId: number) => async (e: FormEvent) => {
-        e.preventDefault();
-        const body = commentInputs[taskId]?.trim();
-        if (!body) return;
-
-        try {
-            const response = await fetch(route('tasks.comments.store', { task: taskId }), {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement).content,
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify({ body }),
-            });
-            const data = await response.json();
-            if (response.ok && data.comment) {
-                setTaskList(prev =>
-                    prev.map(task =>
-                        task.id === taskId
-                            ? { ...task, comments: [...task.comments, data.comment] }
-                            : task
-                    )
-                );
-                setCommentInputs(prev => ({ ...prev, [taskId]: '' }));
-            } else {
-                setError(data.message || 'Failed to post comment');
-            }
-        } catch (err) {
-            console.error(err);
-            setError('Network error');
-        }
-    };
-
 
     const handleToggleDone = async (taskId: number) => {
         try {
@@ -81,7 +40,6 @@ export default function MyProjects({ projects, currentProjectId, tasks = [] }: P
             console.error('Toggle failed:', error)
         }
     }
-
 
     return (
         <AppLayout>
@@ -108,19 +66,7 @@ export default function MyProjects({ projects, currentProjectId, tasks = [] }: P
                                     You have no tasks in this project.
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {taskList.map(task => (
-                                        <TaskCard
-                                            key={task.id}
-                                            task={task}
-                                            commentInput={commentInputs[task.id] || ''}
-                                            onInputChange={handleInputChange(task.id.toString())}
-                                            onSubmit={handleSubmit(task.id)}
-                                            error={error}
-                                            onToggleDone={handleToggleDone}
-                                        />
-                                    ))}
-                                </div>
+                                <KanbanBoard initialTasks={taskList} onToggleDone={handleToggleDone} />
                             )}
                         </>
                     )}
@@ -129,4 +75,3 @@ export default function MyProjects({ projects, currentProjectId, tasks = [] }: P
         </AppLayout>
     )
 }
-
