@@ -37,23 +37,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
         Route::post('users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
         Route::delete('users/{user}/force-delete', [UserController::class, 'forceDelete'])->name('users.force-delete');
+
+        Route::post('projects/json', [\App\Http\Controllers\ProjectController::class, 'json'])->name('projects.json');
+        Route::resource('projects', \App\Http\Controllers\ProjectController::class);
+        Route::get('projects/trashed', [\App\Http\Controllers\ProjectController::class, 'trashed'])->name('projects.trashed');
+        Route::post('projects/{project}/restore', [\App\Http\Controllers\ProjectController::class, 'restore'])->name('projects.restore');
+        Route::delete('projects/{project}/force-delete', [\App\Http\Controllers\ProjectController::class, 'forceDelete'])->name('projects.force-delete');
+        Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
+        Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
+    
+        Route::post('tasks/json', [\App\Http\Controllers\TaskController::class, 'json'])->name('tasks.json');
+        Route::resource('tasks', \App\Http\Controllers\TaskController::class);
+        Route::get('tasks/trashed', [\App\Http\Controllers\TaskController::class, 'trashed'])->name('tasks.trashed');
+        Route::post('tasks/{task}/restore', [\App\Http\Controllers\TaskController::class, 'restore'])->name('tasks.restore');
+        Route::delete('tasks/{task}/force-delete', [\App\Http\Controllers\TaskController::class, 'forceDelete'])->name('tasks.force-delete');
+    
+        Route::post('activity-logs/json', [ActivityLogController::class, 'jsonBySubject'])->name('activity-logs.json');
     });
 
-    Route::post('projects/json', [\App\Http\Controllers\ProjectController::class, 'json'])->name('projects.json');
-    Route::resource('projects', \App\Http\Controllers\ProjectController::class);
-    Route::get('projects/trashed', [\App\Http\Controllers\ProjectController::class, 'trashed'])->name('projects.trashed');
-    Route::post('projects/{project}/restore', [\App\Http\Controllers\ProjectController::class, 'restore'])->name('projects.restore');
-    Route::delete('projects/{project}/force-delete', [\App\Http\Controllers\ProjectController::class, 'forceDelete'])->name('projects.force-delete');
-    Route::post('projects/upload', [\App\Http\Controllers\ProjectController::class, 'uploadDocument'])->name('projects.upload');
-    Route::post('projects/delete-file', [\App\Http\Controllers\ProjectController::class, 'deleteFile'])->name('projects.deleteFile');
-
-    Route::post('tasks/json', [\App\Http\Controllers\TaskController::class, 'json'])->name('tasks.json');
-    Route::resource('tasks', \App\Http\Controllers\TaskController::class);
-    Route::get('tasks/trashed', [\App\Http\Controllers\TaskController::class, 'trashed'])->name('tasks.trashed');
-    Route::post('tasks/{task}/restore', [\App\Http\Controllers\TaskController::class, 'restore'])->name('tasks.restore');
-    Route::delete('tasks/{task}/force-delete', [\App\Http\Controllers\TaskController::class, 'forceDelete'])->name('tasks.force-delete');
-
-    Route::post('activity-logs/json', [ActivityLogController::class, 'jsonBySubject'])->name('activity-logs.json');
 
     Route::get('/my-projects', [\App\Http\Controllers\MyProjectController::class, 'index'])->name('my-projects.index');
     Route::post('/tasks/{task}/comments', [\App\Http\Controllers\MyProjectController::class, 'storeComment'])->name('tasks.comments.store');

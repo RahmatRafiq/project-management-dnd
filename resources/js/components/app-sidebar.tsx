@@ -23,53 +23,57 @@ export function AppSidebar() {
 
     const roleNames = auth.user.roles ? auth.user.roles.map((r) => r.name) : [];
     const mainNavItems: NavItem[] = [
-        {
-            title: 'Dashboard',
-            href: '/dashboard',
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Log Activity',
-            href: '/activity-logs',
-            icon: LayoutGrid,
-        },
-        {
-            title: 'Users Management',
-            href: '',
-            icon: Users,
-            children: [
-                {
-                    title: 'Roles',
-                    href: '/roles',
-                    icon: Shield,
-                },
-                {
-                    title: 'Permissions',
-                    href: '/permissions',
-                    icon: Shield,
-                },
-                ...(roleNames.includes('administrator')
-                    ? [
-                        {
-                            title: 'User',
-                            href: '/users',
-                            icon: Settings,
-                        },
-                    ]
-                    : []),
-            ],
-        },
-        {
-            title: 'Projects and Tasks',
-            href: '/projects',
-            icon: Folder,
-        },
-        {
-            title: 'My Projects',
-            href: '/my-projects',
-            icon: Folder,
-        }
-    ];
+    {
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: LayoutGrid,
+    },
+    ...(roleNames.includes('administrator')
+        ? [
+            {
+                title: 'Log Activity',
+                href: '/activity-logs',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Projects and Tasks',
+                href: '/projects',
+                icon: Folder,
+            },
+        ]
+        : []),
+    {
+        title: 'My Projects',
+        href: '/my-projects',
+        icon: Folder,
+    },
+    {
+        title: 'Users Management',
+        href: '',
+        icon: Users,
+        children: [
+            {
+                title: 'Roles',
+                href: '/roles',
+                icon: Shield,
+            },
+            {
+                title: 'Permissions',
+                href: '/permissions',
+                icon: Shield,
+            },
+            ...(roleNames.includes('administrator')
+                ? [
+                    {
+                        title: 'User',
+                        href: '/users',
+                        icon: Settings,
+                    },
+                ]
+                : []),
+        ],
+    },
+];
 
     const footerNavItems: NavItem[] = [
         {
