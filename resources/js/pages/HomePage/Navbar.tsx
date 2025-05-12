@@ -4,11 +4,16 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Disclosure } from '@headlessui/react';
 import { Menu, X } from 'lucide-react';
 import AppearanceToggleTab from '@/components/appearance-tabs';
+import { Link, usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
 
 const links = ['Features', 'Workflow', 'Templates', 'Get Started'];
+let auth: SharedData['auth'];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { auth: pageAuth } = usePage<SharedData>().props;
+  auth = pageAuth;
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -18,11 +23,10 @@ export default function Navbar() {
 
   return (
     <Disclosure as="header"
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
           ? 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg shadow-md'
           : 'bg-transparent dark:bg-transparent'
-      }`}
+        }`}
     >
       {({ open }) => (
         <>
@@ -53,6 +57,31 @@ export default function Navbar() {
                   <AppearanceToggleTab />
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
+            </nav>
+            <nav className="flex items-center justify-end gap-4">
+              {auth.user ? (
+                <Link
+                  href={route('dashboard')}
+                  className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href={route('login')}
+                    className="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    href={route('register')}
+                    className="inline-block rounded-sm border border-[#19140035] px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#1915014a] dark:border-[#3E3E3A] dark:text-[#EDEDEC] dark:hover:border-[#62605b]"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
             </nav>
             <Disclosure.Button className="md:hidden text-gray-700 dark:text-gray-300">
               {open ? <X size={24} /> : <Menu size={24} />}
