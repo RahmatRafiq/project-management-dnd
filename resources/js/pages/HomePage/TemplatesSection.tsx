@@ -1,4 +1,3 @@
-// src/HomePage/TemplatesSection.tsx
 import * as Popover from '@radix-ui/react-popover';
 import { Transition } from '@headlessui/react';
 import { Fragment } from 'react';
@@ -26,10 +25,12 @@ const templates = [
 
 export default function TemplatesSection() {
   return (
-    <section id="templates" className="py-20 bg-gray-100 relative">
+    <section id="templates" className="py-20 bg-gray-100 dark:bg-gray-800 transition-colors">
       <div className="container mx-auto text-center">
-        <h2 className="text-5xl font-bold text-gray-800">Start with a Template</h2>
-        <p className="mt-4 text-lg text-gray-600">
+        <h2 className="text-5xl font-bold text-gray-800 dark:text-gray-100">
+          Start with a Template
+        </h2>
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
           Build anything faster with our high-quality pre-designed layouts.
         </p>
 
@@ -37,8 +38,8 @@ export default function TemplatesSection() {
           {templates.map((tpl) => (
             <Popover.Root key={tpl.id}>
               <Popover.Trigger asChild>
-                <div className="p-8 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow cursor-pointer">
-                  <h3 className="text-2xl font-semibold text-gray-800">
+                <div className="p-8 bg-white dark:bg-gray-900 rounded-xl shadow-lg hover:shadow-2xl transition-shadow cursor-pointer">
+                  <h3 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                     {tpl.title}
                   </h3>
                 </div>
@@ -58,7 +59,7 @@ export default function TemplatesSection() {
                     align="center"
                     side="top"
                     sideOffset={8}
-                    className="z-50 w-80 bg-white rounded-lg shadow-xl ring-1 ring-black/5 overflow-hidden"
+                    className="z-50 w-80 bg-white dark:bg-gray-900 rounded-lg shadow-xl ring-1 ring-black/5 dark:ring-white/10 overflow-hidden transition-colors"
                   >
                     <img
                       src={tpl.previewImg}
@@ -66,17 +67,19 @@ export default function TemplatesSection() {
                       className="w-full h-40 object-cover"
                     />
                     <div className="p-4 text-left">
-                      <h4 className="text-lg font-semibold text-gray-800">
+                      <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                         {tpl.title}
                       </h4>
-                      <p className="mt-2 text-gray-600">{tpl.description}</p>
+                      <p className="mt-2 text-gray-600 dark:text-gray-300">
+                        {tpl.description}
+                      </p>
                       <button
                         className="mt-4 w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
                       >
                         Use Template
                       </button>
                     </div>
-                    <Popover.Arrow className="fill-white" />
+                    <Popover.Arrow className="fill-white dark:fill-gray-900" />
                   </Popover.Content>
                 </Transition>
               </Popover.Portal>

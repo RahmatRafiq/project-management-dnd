@@ -1,51 +1,81 @@
+import { useState, useEffect } from 'react';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { Disclosure } from '@headlessui/react';
+import { Menu, X } from 'lucide-react';
+import AppearanceToggleTab from '@/components/appearance-tabs';
+
+const links = ['Features', 'Workflow', 'Templates', 'Get Started'];
 
 export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
-      <div className="container mx-auto flex justify-between items-center py-4 px-6">
-        <h1 className="text-2xl font-bold text-blue-600">NotionFlow</h1>
-
-        <NavigationMenu.Root className="relative z-50">
-          <NavigationMenu.List className="flex space-x-6 text-gray-700">
-            <NavigationMenu.Item>
-              <NavigationMenu.Link
-                href="#features"
-                className="hover:text-blue-600 transition-colors text-sm font-medium"
-              >
-                Features
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
-
-            <NavigationMenu.Item>
-              <NavigationMenu.Link
-                href="#workflow"
-                className="hover:text-blue-600 transition-colors text-sm font-medium"
-              >
-                Workflow
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
-
-            <NavigationMenu.Item>
-              <NavigationMenu.Link
-                href="#templates"
-                className="hover:text-blue-600 transition-colors text-sm font-medium"
-              >
-                Templates
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
-
-            <NavigationMenu.Item>
-              <NavigationMenu.Link
-                href="#cta"
-                className="hover:text-blue-600 transition-colors text-sm font-medium"
-              >
-                Get Started
-              </NavigationMenu.Link>
-            </NavigationMenu.Item>
-          </NavigationMenu.List>
-        </NavigationMenu.Root>
-      </div>
-    </header>
+    <Disclosure as="header"
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg shadow-md'
+          : 'bg-transparent dark:bg-transparent'
+      }`}
+    >
+      {({ open }) => (
+        <>
+          <div className="container mx-auto flex justify-between items-center py-4 px-6">
+            <h1 className="text-2xl font-bold text-gray-700 dark:text-blue-400">
+              NotionFlow
+            </h1>
+            <nav className="hidden md:flex items-center space-x-6">
+              <NavigationMenu.Root className="relative z-50">
+                <NavigationMenu.List className="flex space-x-4">
+                  {links.map((label) => (
+                    <NavigationMenu.Item key={label}>
+                      <NavigationMenu.Link
+                        href={`#${label.toLowerCase().replace(' ', '')}`}
+                        className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-sm font-medium"
+                      >
+                        {label}
+                      </NavigationMenu.Link>
+                    </NavigationMenu.Item>
+                  ))}
+                </NavigationMenu.List>
+              </NavigationMenu.Root>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                  Appearance
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content className="mt-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg transition-colors">
+                  <AppearanceToggleTab />
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </nav>
+            <Disclosure.Button className="md:hidden text-gray-700 dark:text-gray-300">
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </Disclosure.Button>
+          </div>
+          <Disclosure.Panel className="md:hidden bg-white dark:bg-gray-900/90 backdrop-blur-sm transition-colors">
+            <div className="px-6 pb-4 space-y-2">
+              {links.map((label) => (
+                <a
+                  key={label}
+                  href={`#${label.toLowerCase().replace(' ', '')}`}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                >
+                  {label}
+                </a>
+              ))}
+              <div className="mt-2 px-4">
+                <AppearanceToggleTab />
+              </div>
+            </div>
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
   );
 }

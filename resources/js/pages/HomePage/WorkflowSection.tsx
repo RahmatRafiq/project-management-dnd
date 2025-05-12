@@ -1,5 +1,5 @@
 export default function WorkflowSection() {
-  const workflowItems = [
+    const workflowItems = [
     {
       title: "Typography",
       desc: "Typography is the art and technique of arranging type to make written language legible and appealing.",
@@ -20,7 +20,8 @@ export default function WorkflowSection() {
   return (
     <section
       id="workflow"
-      className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-gray-100"
+      className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700
+                 dark:from-indigo-900 dark:to-indigo-800 text-gray-100 transition-colors"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight">
@@ -34,16 +35,21 @@ export default function WorkflowSection() {
           {workflowItems.map((item, i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl overflow-hidden shadow-xl transition-transform transform hover:scale-105 hover:shadow-2xl"
+              className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden
+                         shadow-xl transition-shadow hover:shadow-2xl"
             >
               <img
                 src={item.img}
                 alt={item.title}
                 className="w-full h-40 object-cover"
               />
-              <div className="p-6 text-left text-black">
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm text-gray-700">{item.desc}</p>
+              <div className="p-6 text-left">
+                <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                  {item.desc}
+                </p>
               </div>
             </div>
           ))}
