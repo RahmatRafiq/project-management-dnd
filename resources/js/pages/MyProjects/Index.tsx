@@ -1,5 +1,4 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react'
-import { Inertia } from '@inertiajs/inertia'
 import { Head } from '@inertiajs/react'
 
 import AppLayout from '@/layouts/app-layout'
@@ -25,25 +24,41 @@ export default function MyProjects({ projects, currentProjectId, tasks = [] }: P
             setCommentInputs(prev => ({ ...prev, [taskId]: e.target.value }))
         }
 
-    const handleSubmit = (taskId: string) => async (e: FormEvent) => {
-        e.preventDefault()
-        const body = commentInputs[taskId]?.trim()
-        if (!body) return
+    const handleSubmit = (taskId: number) => async (e: FormEvent) => {
+        e.preventDefault();
+        const body = commentInputs[taskId]?.trim();
+        if (!body) return;
 
-        setError(null)
-        Inertia.post(
-            route('tasks.comments.store', { task: taskId }),
-            { body },
-            {
-                onSuccess: () => {
-                    setCommentInputs(prev => ({ ...prev, [taskId]: '' }))
+        try {
+            const response = await fetch(route('tasks.comments.store', { task: taskId }), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement).content,
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
-                onError: (errors) => {
-                    setError(errors.body || 'Failed to post comment.')
-                },
+                body: JSON.stringify({ body }),
+            });
+            const data = await response.json();
+            if (response.ok && data.comment) {
+                setTaskList(prev =>
+                    prev.map(task =>
+                        task.id === taskId
+                            ? { ...task, comments: [...task.comments, data.comment] }
+                            : task
+                    )
+                );
+                setCommentInputs(prev => ({ ...prev, [taskId]: '' }));
+            } else {
+                setError(data.message || 'Failed to post comment');
             }
-        )
-    }
+        } catch (err) {
+            console.error(err);
+            setError('Network error');
+        }
+    };
+
+
     const handleToggleDone = async (taskId: number) => {
         try {
             const response = await fetch(route('tasks.toggle-done', { task: taskId }), {
@@ -100,7 +115,7 @@ export default function MyProjects({ projects, currentProjectId, tasks = [] }: P
                                             task={task}
                                             commentInput={commentInputs[task.id] || ''}
                                             onInputChange={handleInputChange(task.id.toString())}
-                                            onSubmit={handleSubmit(task.id.toString())}
+                                            onSubmit={handleSubmit(task.id)}
                                             error={error}
                                             onToggleDone={handleToggleDone}
                                         />

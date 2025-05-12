@@ -50,18 +50,22 @@ class MyProjectController extends Controller
             'body' => 'required|string|max:3000',
         ]);
 
-        if (! $task->users()->where('users.id', $request->user()->id)->exists()) {
-            abort(403);
-        }
+        abort_unless(
+            $task->users()->where('users.id', $request->user()->id)->exists(),
+            403
+        );
 
-        $task->comments()->create([
+        $comment = $task->comments()->create([
             'user_id' => $request->user()->id,
             'body'    => $data['body'],
         ]);
 
-        $task->comments()->with('user')->latest()->first();
+        $comment->load('user');
 
-        return redirect()->back()->with('success', 'Comment added successfully.');
+        return response()->json([
+            'status'  => 'ok',
+            'comment' => $comment,
+        ], 201);
     }
 
     public function toggleDone(Request $request, Task $task)
