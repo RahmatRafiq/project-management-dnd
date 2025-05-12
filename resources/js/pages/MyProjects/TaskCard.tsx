@@ -15,14 +15,14 @@ type TaskCardProps = {
 export default function TaskCard({ task, commentInput, onInputChange, onSubmit, error, onToggleDone }: TaskCardProps) {
     const [isToggling, setIsToggling] = useState(false)
 
-    const toggleDone = () => {
+    const toggleDone: () => void = () => {
         setIsToggling(true)
         onToggleDone(task.id)
         setTimeout(() => setIsToggling(false), 500)
     }
 
     return (
-        <div className="border rounded-lg p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-gray-100 dark:bg-gray-800 border rounded-lg p-4 shadow-sm flex flex-col justify-between">
             <div>
                 <h3 className="font-bold text-lg">{task.title}</h3>
                 <p className="text-sm text-gray-600">{task.description}</p>

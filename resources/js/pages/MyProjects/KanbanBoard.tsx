@@ -115,44 +115,49 @@ export default function KanbanBoard({ initialTasks, onToggleDone }: KanbanBoardP
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex gap-4">
-                {(['in_progress', 'done'] as StatusKey[]).map(key => (
-                    <Droppable key={key} droppableId={key}>
-                        {provided => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                className="bg-gray-100 dark:bg-gray-800 p-2 rounded flex-1 h-[80vh] overflow-auto"
-                            >
-                                <h3 className="font-bold mb-2">{columns[key].title}</h3>
-                                {columns[key].tasks.map((task, index) => (
-                                    <Draggable
-                                        key={task.id.toString()}
-                                        draggableId={task.id.toString()}
-                                        index={index}
-                                    >
-                                        {(prov, snap) => (
-                                            <div
-                                                ref={prov.innerRef}
-                                                {...prov.draggableProps}
-                                                {...prov.dragHandleProps}
-                                                className={`mb-2 ${snap.isDragging ? 'shadow-lg' : ''}`}
-                                            >
-                                                <TaskCard
-                                                    task={task}
-                                                    commentInput={commentInputs[task.id] || ''}
-                                                    onInputChange={e => handleInputChange(task.id, e.target.value)}
-                                                    onSubmit={e => handleSubmit(e, task.id)}
-                                                    error={errors[task.id] || null}
-                                                    onToggleDone={() => onToggleDone(task.id)}
-                                                />
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
+                {(['in_progress', 'done'] as StatusKey[]).map((key, index) => (
+                    <React.Fragment key={key}>
+                        <Droppable droppableId={key}>
+                            {provided => (
+                                <div
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                    className="p-2 rounded flex-1 h-[80vh] overflow-auto"
+                                >
+                                    <h3 className="font-bold mb-2">{columns[key].title}</h3>
+                                    {columns[key].tasks.map((task, index) => (
+                                        <Draggable
+                                            key={task.id.toString()}
+                                            draggableId={task.id.toString()}
+                                            index={index}
+                                        >
+                                            {(prov, snap) => (
+                                                <div
+                                                    ref={prov.innerRef}
+                                                    {...prov.draggableProps}
+                                                    {...prov.dragHandleProps}
+                                                    className={`mb-2 ${snap.isDragging ? 'shadow-lg' : ''}`}
+                                                >
+                                                    <TaskCard
+                                                        task={task}
+                                                        commentInput={commentInputs[task.id] || ''}
+                                                        onInputChange={e => handleInputChange(task.id, e.target.value)}
+                                                        onSubmit={e => handleSubmit(e, task.id)}
+                                                        error={errors[task.id] || null}
+                                                        onToggleDone={() => onToggleDone(task.id)}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                        {index === 0 && (
+                            <div className="w-[1px] bg-gray-300"></div>
                         )}
-                    </Droppable>
+                    </React.Fragment>
                 ))}
             </div>
         </DragDropContext>
