@@ -64,6 +64,7 @@ export default function ProjectIndex({ filter: initialFilter, success }: { filte
 
   document.querySelectorAll('.btn-download').forEach(btn =>
     btn.addEventListener('click', () => {
+      console.log('Download button clicked');
       const url = btn.getAttribute('data-url');
       if (url) window.open(url, '_blank');
     })
