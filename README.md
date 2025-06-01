@@ -1,6 +1,6 @@
-﻿# Laravel 12 Spatie Media & Roles StarterKit
+﻿# Laravel 12 Project Management Laravel
 
-An open-source starter kit built with **Laravel 12** to jumpstart your web development projects. This kit comes packed with powerful features including:
+A modern Project Management starter kit built with Laravel 12. This kit helps you manage projects, tasks, documents, and team roles efficiently, featuring:
 
 - **Spatie Roles & Permissions** – Robust user access control.
 - **Spatie Media Library** – Seamless media management.
@@ -38,8 +38,7 @@ Built in just **29 hours over 5 days**, this starter kit is designed to help you
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.com/RahmatRafiq/laravel-12-spattie-media-and-roles.git
-    cd laravel-12-spattie-media-and-roles
+    git clone https://github.com/RahmatRafiq/project-management-dnd.git
     ```
 
 2. **Install PHP Dependencies**
@@ -350,26 +349,14 @@ useEffect(() => {
 
 ## Running the Application
 
-1. **Start the Laravel Development Server**
+Run the following command to start the Laravel server and automatically compile assets:
 
-    ```bash
-    php artisan serve
-    ```
+```bash
+composer run dev
+```
 
-    Then open your browser and navigate to http://localhost:8000.
-
-2. **Compile Assets During Development**
-
-    For asset compilation and live-reloading during development, run:
-
-    ```bash
-    npm run dev
-    ```
-
----
+Then open your browser and go to http://localhost:8000.
 
 ## License
 
 This project is open-source and available under the MIT License.
-#   c o d i n g - t e s t - l a r a v e l  
- 
